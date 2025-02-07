@@ -1,0 +1,40 @@
+
+
+.medicos-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.medicos-list {
+  display: flex;
+  justify-content: flex-start; /* Alineamos las tarjetas a la izquierda */
+  gap: 20px; /* Espaciado entre las tarjetas */
+  overflow-x: auto; /* Permitimos desplazamiento horizontal si las tarjetas no caben en la pantalla */
+  padding-bottom: 10px;
+}
+
+.medico-card {
+  background-color: #f8f8f8;
+  padding: 15px;
+  border-radius: 8px;
+  width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0; /* Evita que las tarjetas se reduzcan de tamaño */
+}
+
+.medico-foto {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.medico-card h3 {
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.medico-card p {
+  font-size: 16px;
+  color: #666;
+}

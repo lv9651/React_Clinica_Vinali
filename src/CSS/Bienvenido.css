@@ -1,0 +1,29 @@
+/* Asegúrate de que html y body cubran toda la pantalla */
+html, body {
+  height: 100%; /* Necesario para que el contenedor use toda la altura */
+  margin: 0;  /* Eliminar márgenes por defecto */
+}
+
+.bienvenida-container {
+/* Ruta de la imagen */
+  background-size: cover; /* Hace que la imagen cubra todo el contenedor */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* No repite la imagen */
+  color: rgb(80, 6, 64);  /* Color del texto */
+  height: 70vh; /* Asegura que el contenedor ocupe toda la altura de la ventana */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.bienvenida-container h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.bienvenida-container p {
+  font-size: 1.5rem;
+  font-weight: normal;
+}

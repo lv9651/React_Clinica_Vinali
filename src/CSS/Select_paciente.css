@@ -1,0 +1,91 @@
+.reserva-cita-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Estilo para los botones principales de reserva */
+.button-main {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 15px 32px;
+  text-align: center;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 200px;
+}
+
+.button-main:hover {
+  background-color: #45a049;
+}
+
+/* Contenedor para la lista de dependientes */
+.dependientes-container {
+  width: 100%;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.dependientes-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.dependiente-button {
+  display: block;
+  background-color: #007BFF;
+  color: white;
+  padding: 15px;
+  margin: 10px 0;
+  border: none;
+  text-align: left;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.dependiente-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.dependiente-button span {
+  font-weight: bold;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
+}
+
+.agregar-dependiente {
+  margin-top: 20px;
+}
+
+.button-registrar {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.button-registrar:hover {
+  background-color: #218838;
+}
+
+/* Estilos para el estado en el que no se encuentran dependientes */
+.no-dependientes {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 18px;
+}

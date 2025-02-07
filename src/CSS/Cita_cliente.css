@@ -1,0 +1,68 @@
+/* Estilo general de la tabla */
+.cita-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabecera de la tabla */
+.cita-table thead {
+  background-color: #4CAF50; /* Color de fondo de la cabecera */
+  color: white;
+  text-align: left;
+}
+
+/* Estilo para las celdas de la tabla */
+.cita-table th, .cita-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+/* Cambiar color de fondo de las filas al pasar el mouse (hover effect) */
+.cita-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Estilo para las filas de la tabla */
+.cita-table tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+/* Alternancia de color de fondo para filas (striped rows) */
+.cita-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.cita-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+/* Estilo para las celdas */
+.cita-table td {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Estilo para los encabezados */
+.cita-table th {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Estilo para el contenedor de la tabla */
+.table-container {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 20px;
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+  .cita-table th, .cita-table td {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}

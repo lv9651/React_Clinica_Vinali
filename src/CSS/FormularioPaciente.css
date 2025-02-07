@@ -1,0 +1,31 @@
+
+.formulario-paciente {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.formulario-paciente form {
+  display: grid;
+  gap: 10px;
+}
+
+.formulario-paciente label {
+  font-weight: bold;
+}
+
+.formulario-paciente input,
+.formulario-paciente textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.formulario-paciente textarea {
+  height: 100px;
+  resize: vertical;
+}

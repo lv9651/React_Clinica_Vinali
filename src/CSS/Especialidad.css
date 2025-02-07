@@ -1,0 +1,83 @@
+/* Contenedor principal */
+.especialidades-container {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Título principal */
+.especialidades-container h2 {
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 30px; /* Espaciado entre el título y las especialidades */
+}
+
+/* Lista de especialidades */
+.especialidades-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Cada tarjeta de especialidad */
+.especialidad-card {
+  background-color: #f8f8f8;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 250px;  /* Ajusta el tamaño de los bloques */
+  height: auto;
+  max-width: 300px;  /* Limita el tamaño máximo */
+  overflow: hidden;
+  margin: 0 auto; /* Centra las tarjetas */
+}
+
+/* Imagen de la especialidad */
+.especialidad-imagen {
+  width: 70px;  /* Reduce el tamaño de la imagen */
+  height: 70px;
+  object-fit: cover;
+  border-radius: 50%;  /* Imagen redonda */
+  margin-right: 15px;  /* Espacio entre la imagen y el texto */
+}
+
+/* Información de la especialidad (nombre y descripción) */
+.especialidad-info {
+  flex: 1;
+  text-align: left; /* Alinea el texto a la izquierda */
+}
+
+/* Título de la especialidad */
+.especialidad-card h3 {
+  font-size: 1.4em;
+  color: #333;
+  margin-bottom: 10px; /* Espaciado entre el título y la descripción */
+}
+
+/* Descripción de la especialidad */
+.especialidad-card p {
+  font-size: 1em;
+  color: #666;
+  line-height: 1.5;
+  margin: 0; /* Elimina márgenes innecesarios */
+  text-align: justify; /* Justifica el texto para mejor legibilidad */
+}
+
+/* Elimina márgenes y saltos innecesarios */
+.especialidad-card p {
+  white-space: normal; /* Permite que el texto se ajuste correctamente */
+  overflow-wrap: break-word; /* Evita que el texto se salga de los límites */
+}
+
+/* Asegura que las tarjetas tengan un espaciado adecuado entre ellas */
+.especialidad-card:last-child {
+  margin-bottom: 0; /* Elimina el margen inferior de la última tarjeta */
+}
+
+/* Opcional: Resaltar los textos importantes */
+.especialidad-card strong {
+  color: #007bff;
+}
