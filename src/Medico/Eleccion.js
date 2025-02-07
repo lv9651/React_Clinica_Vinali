@@ -7,7 +7,7 @@ import Notification from '../Medico/Notification';
 const Eleccion = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { especialidad, medico, sucursal, dia, hora ,idesucursal,idhorariomedicodividido,idpaciente} = location.state || {};
+  const { especialidad, medico, sucursal, dia, hora ,idesucursal,idhorariomedicodividido,idpaciente,Horariomedic} = location.state || {};
 
   const [selectedData, setSelectedData] = useState({
     especialidad,
@@ -16,7 +16,7 @@ const Eleccion = () => {
     dia,
     hora,
     idesucursal,
-    idhorariomedicodividido,idpaciente
+    idhorariomedicodividido,idpaciente,Horariomedic
   });
   const [trans, setTrans] = useState('')
   const [tipoPago, setTipoPago] = useState([]);
@@ -31,6 +31,7 @@ const Eleccion = () => {
     return precioFijo; // Subtotal siempre es igual al precio fijo
   };
 
+ 
   const calcularTotal = () => {
     if (documento === '1') {
       return calcularSubtotal() * (1 + IGV); // Aplica el IGV si es Factura
@@ -43,7 +44,7 @@ const Eleccion = () => {
     const loadIzipayScript = () => {
       // Verificar si Izipay ya está cargado
       if (window.Izipay) {
-        console.log("Izipay ya está cargado");
+        {/*  console.log("Izipay ya está cargado");*/}
         return;
       }
 
@@ -51,7 +52,7 @@ const Eleccion = () => {
       script.src = 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js';
       script.async = true;
       script.onload = () => {
-        console.log("Izipay SDK cargado correctamente");
+       {/*   console.log("Izipay SDK cargado correctamente");*/}
       };
       script.onerror = () => {
         console.error("Error al cargar el script de Izipay");
@@ -111,7 +112,7 @@ function addLeadingZero(number) {
       transactionId: transactionId,
       paymentType: "CONTADO",
       amount: calcularTotal().toFixed(2),
-      orderNumber: "407986222",
+      orderNumber:  `${selectedData.Horariomedic}${selectedData.idhorariomedicodividido}${usuario.usuarioID}`,
       creditAvailable: 0,
       firstName: usuario.nombres ,
       lastName: usuario.apellidoPaterno,
@@ -120,6 +121,8 @@ function addLeadingZero(number) {
       street: "los olivos",
       documentNumber: usuario.numeroDocumento,
     };
+
+   
 
     try {
       const response = await fetch('https://localhost:7257/api/Payment/process-payment', {
@@ -132,9 +135,9 @@ function addLeadingZero(number) {
 
       const data = await response.json();
       if (data.code === "00" && data.message === "OK") {
-        console.log('Obtener proceso éxito');
+        {/*  console.log('Obtener proceso éxito');
         console.log('Respuesta del servidor:', data);
-
+*/}
         // Aquí se obtiene el token y se carga el formulario de Izipay
         const token = data.response.token; // Asegúrate de que tu API devuelve el token aquí
       
@@ -145,7 +148,7 @@ function addLeadingZero(number) {
               action: 'pay',
               merchantCode: '4007701',
               order: {
-                orderNumber: "407986222",
+                orderNumber:  `${selectedData.Horariomedic}${selectedData.idhorariomedicodividido}${usuario.usuarioID}`,
                 currency: 'PEN',
                 amount: calcularTotal().toFixed(2),
                 processType: 'AT',
@@ -172,7 +175,7 @@ function addLeadingZero(number) {
             authorization: token,
             keyRSA: 'YOUR_RSA_KEY', // Aquí va tu clave pública RSA
             callbackResponse: (response) => {
-              console.log(response); // Aquí procesas la respuesta de la transacción
+       
               if (response.code === '00') {
                 setNotification({
                   
@@ -199,7 +202,8 @@ function addLeadingZero(number) {
         });
       }
     } catch (error) {
-      console.error('Error:', error);
+    
+      
       setNotification({
         message: 'Hubo un problema al procesar el pago.',
         type: 'error',
@@ -242,7 +246,8 @@ function addLeadingZero(number) {
       });
   
       const data = await response.json();
-      console.log(data);
+   
+      
       
     
     } catch (error) {
@@ -295,7 +300,7 @@ function addLeadingZero(number) {
       });
   
       const data = await response.json();
-      console.log(data);
+  
       
       if (data.message==='Venta creada exitosamente.') {
         // Si la venta se registra con éxito
@@ -308,7 +313,7 @@ function addLeadingZero(number) {
         });
       }
     } catch (error) {
-      console.error('Error al registrar la venta:', error);
+     
       setNotification({
         message: 'Hubo un problema al registrar la venta.',
         type: 'error',
@@ -429,7 +434,7 @@ function addLeadingZero(number) {
 
           {mostrarSelect && (
             <>
-              <select className="form-select mb-3" style={{ marginTop: '20px' }}>
+             {/* <select className="form-select mb-3" style={{ marginTop: '20px' }}>
                 <option value="" disabled>
                   Selecciona un tipo de pago
                 </option>
@@ -438,7 +443,7 @@ function addLeadingZero(number) {
                     {tipo.descripcion}
                   </option>
                 ))}
-              </select>
+              </select>*/}
               <div>
                 <label style={{ fontWeight: '600', fontSize: '1.1rem', color: '#555' }}>
                   Tipo de Documento:

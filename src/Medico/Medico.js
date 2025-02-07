@@ -22,9 +22,10 @@ const Especialidades = () => {
   const [allEspecialidades, setAllEspecialidades] = useState([]);
   const [allMedicoHorarios, setAllMedicoHorarios] = useState({});
   const [notification, setNotification] = useState(null); 
+  const [horaromed, setHorariomed] = useState(''); 
   const location = useLocation();  
   const { cli_codigo } = location.state || {};  
-
+  let idhorariomedicoString;
   const formatTime = (timeString) => {
     const date = new Date(`1970-01-01T${timeString}Z`);
     let hours = date.getUTCHours();
@@ -97,7 +98,7 @@ const Especialidades = () => {
       console.error('Error al buscar médicos por especialidad:', error);
     }
   };
-  console.log(cli_codigo);
+
 
 
   const handleSearch = (event) => {
@@ -126,8 +127,11 @@ const Especialidades = () => {
   };
 
   const handleClickDia = async (idhorariomedico, fecha) => {
-    console.log("Se hizo clic en el día:", fecha);
+  
     const idhorariomedicoString = String(idhorariomedico);
+    setHorariomed(idhorariomedicoString);
+
+
     
     try {
       const response = await axios.post('https://localhost:7257/api/Medico/buscardiahora', {
@@ -136,7 +140,7 @@ const Especialidades = () => {
         idmodalidad: String(1)
       });
 
-      console.log("Respuesta de la API:", response.data);
+      
 
       if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         const horariosDelDia = response.data.map((horario) => ({
@@ -207,7 +211,8 @@ const Especialidades = () => {
     dia: fechaFormateada, // Día seleccionado formateado
     hora: hora, // Hora seleccionada
     idhorariomedicodividido: idhorariomeddiv, // Hora seleccionada
-    idpaciente:cli_codigo
+    idpaciente:cli_codigo,
+    Horariomedic:horaromed 
   };
 
   // Navegar a Eleccion y pasar los datos como state
@@ -238,10 +243,10 @@ const Especialidades = () => {
         
         // Filtrar los horarios de acuerdo a la sucursal (este es un ejemplo, ajusta la lógica a tu API y estructura)
         const filteredHorario = medicoHorariosList.filter(horario => {
-          console.log(horario.idsucursal);  // Ver cada objeto de horario
+    // Ver cada objeto de horario
           return horario.idsucursal === selectedSucursalValue;  // Verificar que 'idsucursal' sea la propiedad correcta
         });
-        console.log(filteredHorario);
+     
         if (filteredHorario.length > 0) {
           filteredHorarios[numcolegiatura] = filteredHorario;
         }

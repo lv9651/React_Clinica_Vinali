@@ -15,7 +15,7 @@ const BuscarCita = () => {
 
     const fetchCita = async () => {
       try {
-        console.log(usuario);
+      
         const response = await fetch(`https://localhost:7257/api/Medico/buscarcita/${usuario.usuarioID}`);
      
         if (!response.ok) {

@@ -43,7 +43,7 @@ const ReservarCita = () => {
       } else {
         // Si la respuesta no tiene los datos de autenticación, mostramos un error
         const userData = response.data;
-        console.log(response.data);
+   
        // Guardamos los datos del usuario en el contexto global (o localStorage si prefieres)
        setUser(userData); // Usamos el contexto para almacenar los datos del usuario
        setMensajeError('');

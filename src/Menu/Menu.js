@@ -28,8 +28,7 @@ const MainLayout = ({ children }) => {
     navigate('/');
   };
 
-  
-  const fetchNotifications = async () => {
+     {/*const fetchNotifications = async () => {
     try {
       const response = await axios.get(`/api/Notifications/${dni}`);
       setNotifications(response.data);
@@ -55,7 +54,7 @@ const MainLayout = ({ children }) => {
       const notificationIds = notifications.filter(n => !n.is_read).map(n => n.id);
       if (notificationIds.length > 0) {
         await axios.post(`/api/Notifications/${dni}/read`, notificationIds);
-        fetchNotifications();
+      
       }
     } catch (error) {
       console.error('Error al marcar notificaciones como leídas:', error);
@@ -65,7 +64,7 @@ const MainLayout = ({ children }) => {
   useEffect(() => {
     fetchNotifications();
   }, [dni]);
-
+*/}
 
 
   const userMenu = (
@@ -80,7 +79,7 @@ const MainLayout = ({ children }) => {
     <Menu style={{ boxShadow: '0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05)', borderRadius: '8px', width: '400px' }}>
       <Menu.Item key="header" disabled>
         <span style={{ fontWeight: 'bold' }}>Notificaciones</span>
-        <Button type="link" style={{ float: 'right', color: 'red' }} onClick={clearNotifications}>Limpiar</Button>
+        {/* <Button type="link" style={{ float: 'right', color: 'red' }} onClick={clearNotifications}>Limpiar</Button>*/}
       </Menu.Item>
       {notifications.length > 0 ? (
         notifications.map(notification => (
@@ -159,13 +158,13 @@ const MainLayout = ({ children }) => {
         <Header className="site-layout-background" style={{ padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#7FC5A8', color: '#fff' }}>
           <div className="logo" />
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Dropdown overlay={notificationMenu} trigger={['click']} onClick={markNotificationsAsRead}>
+           {/* <Dropdown overlay={notificationMenu} trigger={['click']} onClick={markNotificationsAsRead}>
               <a onClick={e => e.preventDefault()} style={{ padding: '4px 15px', marginRight: '20px', fontSize: '18px', color: '#fff' }}>
                 <Badge count={notificationCount} overflowCount={99}>
                   <BellOutlined />
                 </Badge>
               </a>
-            </Dropdown>
+            </Dropdown>*/}
             <Dropdown overlay={userMenu}>
               <Space>
                 <Avatar size="large" icon={<UserOutlined />} />
