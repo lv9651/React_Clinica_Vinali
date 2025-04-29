@@ -1,0 +1,162 @@
+/* Estilo general para el formulario */
+.registro-cliente-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alineación de los elementos al inicio */
+  min-height: 100vh; /* Aseguramos que el contenedor principal ocupe al menos toda la altura de la ventana */
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;  /* Permitir desplazamiento vertical si el contenido es más grande que la pantalla */
+}
+
+/* Fondo del formulario */
+.registro-cliente-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../FONDO_LOGIN.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: -1;
+}
+
+/* Contenedor del formulario */
+.registro-cliente-form-container {
+  background-color: #ffffff;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 800px;
+  margin-top: 40px;  /* Deja algo de espacio en la parte superior */
+  box-sizing: border-box;
+}
+
+/* Título */
+h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Diseño para las filas de los formularios */
+.form-row {
+  display: flex;
+  gap: 20px; /* Espacio entre los campos */
+  margin-bottom: 15px;
+}
+
+/* Estilo para los campos de entrada */
+input, select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Asegura que el padding se incluye en el tamaño del campo */
+}
+
+input:focus, select:focus {
+  border-color: #0066cc;
+  outline: none;
+}
+
+/* Diseño para cada campo dentro de la fila */
+.form-row div {
+  flex: 1;
+}
+
+/* Mensaje de error */
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* Botones */
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Estilo para el botón Atrás */
+.boton-atras {
+  background-color: #ff4d4f; /* Color de fondo rojo */
+  color: white; /* Texto en blanco */
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.boton-atras:hover {
+  background-color: #e63946; /* Rojo más oscuro al pasar el mouse */
+}
+
+.boton-atras:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Aseguramos que los botones estén alineados de manera correcta */
+.registro-cliente-form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Estilo para los campos de términos y privacidad */
+.form-row label {
+  font-size: 14px;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+/* Asegura que la página sea accesible para móviles */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;  /* En dispositivos pequeños, los campos se apilan verticalmente */
+  }
+
+  .form-row div {
+    margin-bottom: 15px;
+    flex: none;
+  }
+
+  .registro-cliente-form-container {
+    padding: 20px;
+  }
+
+  h3 {
+    font-size: 22px;
+  }
+
+  button {
+    width: 100%;
+  }
+}

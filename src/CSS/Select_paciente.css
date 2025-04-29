@@ -7,20 +7,23 @@
 
 /* Estilo para los botones principales de reserva */
 .button-main {
-  background-color: #4CAF50;
+  background-color: #084a79;
   color: white;
   border: none;
-  padding: 15px 32px;
-  text-align: center;
   font-size: 16px;
   margin: 10px;
   cursor: pointer;
   border-radius: 5px;
-  width: 200px;
+  width: 200px;   /* Establece el ancho fijo */
+  height: 50px;   /* Establece la altura fija */
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .button-main:hover {
-  background-color: #45a049;
+  background-color: #084a79;
 }
 
 /* Contenedor para la lista de dependientes */

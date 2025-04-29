@@ -58,7 +58,76 @@
   overflow-x: auto;
   padding: 20px;
 }
+.cita-table tr {
+  cursor: pointer; /* Cambia el cursor a una mano al pasar por las filas */
+}
+/* Estilos para el modal personalizado */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
 
+.modal {
+  background: white;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-content {
+  padding: 15px;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.modal-footer {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.download-btn {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+.cita-table tr:hover {
+  background-color: #e0e0e0; /* Color de fondo al pasar el mouse */
+}
+.cita-table tr.selected {
+  background-color: #1f548d; /* Azul claro */
+  font-weight: bold;
+}
 /* Diseño responsivo */
 @media (max-width: 768px) {
   .cita-table th, .cita-table td {

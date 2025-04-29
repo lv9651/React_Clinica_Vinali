@@ -5,11 +5,11 @@ import axios from 'axios';  // Importamos axios
 import { message, Spin } from 'antd';  // Importamos Spin de Ant Design
 import { useNavigate } from 'react-router-dom'; // Importamos useNavigate para la redirección
 import { useLocation } from 'react-router-dom';
+import { BASE_URL } from '../Medico/config'; 
 const Registro_act = () => {
   const location = useLocation(); // Obtener el estado de la navegación
   const { documento } = location.state || {}; 
-  const [tipoDocumento, setTipoDocumento] = useState('');
-  const [numeroDocumento, setDocumento] = useState('');
+
   const [nombres, setNombres] = useState('');
   const [apellidoPaterno, setApellidoPaterno] = useState('');
   const [apellidoMaterno, setApellidoMaterno] = useState('');
@@ -32,6 +32,7 @@ const Registro_act = () => {
     setPasswordsMatch(e.target.value === contrasena); // Verifica si las contraseñas coinciden
   };
   console.log(documento);
+
   const handleRegistroSubmit = async (e) => {
     e.preventDefault();  // Evita el comportamiento predeterminado del formulario
 
@@ -46,29 +47,31 @@ const Registro_act = () => {
 
     // Datos a enviar
     const datosRegistro = {
-      tipoDocumento,
-      numeroDocumento,
-      nombres,
-      apellidoPaterno,
-      apellidoMaterno,
-      telefono,
-      correo,
-      contrasena,
-      aceptoTerminos,
-      autorizacionDatos,
+      
+      dni:documento,
+      nombre:nombres,
+      apePat:apellidoPaterno,
+      apeMat:apellidoMaterno,
+      celular:telefono,
+      email:correo,
+      clave:contrasena,
+      aceptTer:aceptoTerminos,
+      Aut:autorizacionDatos,
     };
-
+    const payload = {
+      json: JSON.stringify(datosRegistro)  // Convertimos el objeto en un string JSON
+    };
     try {
       setLoading(true); // Activar el estado de carga
       // Realizamos la llamada a la API usando axios
-      const response = await axios.post('https://localhost:7257/api/Usuario', datosRegistro, {
+      const response = await axios.post(`${BASE_URL}/api/Medicos/Act_cli_Vin`, payload, {
         headers: {
           'Content-Type': 'application/json', // Indicamos que estamos enviando datos en formato JSON
         },
       });
 
       // Si la respuesta es exitosa, procesamos la respuesta
-      message.success(`Registro correcto!`);
+      message.success(`Actualizacion correcto!`);
 
       // Redirigir al usuario a la página de reservas si el registro es exitoso
       navigate('/');  // Asegúrate de que esta ruta esté configurada en tu aplicación
@@ -106,6 +109,7 @@ const Registro_act = () => {
     window.history.back(); // Vuelve a la página anterior
   };
 
+ 
   return (
     <div className="reservar-cita-container">
       <div className="reservar-cita-background">
@@ -120,11 +124,55 @@ const Registro_act = () => {
 
         <form onSubmit={handleRegistroSubmit} className="registro-form">
           {/* Tipo de Documento y Nro de Documento */}
-         
+        
 
-         
+          {/* Nombres, Apellido Paterno, Apellido Materno */}
+          <div className="form-row">
+            <div>
+              <label htmlFor="nombres">Nombres</label>
+              <input 
+                type="text" 
+                id="nombres" 
+                value={nombres} 
+                onChange={(e) => setNombres(e.target.value)} 
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="apellidoPaterno">Apellido Paterno</label>
+              <input 
+                type="text" 
+                id="apellidoPaterno" 
+                value={apellidoPaterno} 
+                onChange={(e) => setApellidoPaterno(e.target.value)} 
+                required
+              />
+            </div>
+          </div>
 
-         
+          {/* Apellido Materno y Nro de Celular */}
+          <div className="form-row">
+            <div>
+              <label htmlFor="apellidoMaterno">Apellido Materno</label>
+              <input 
+                type="text" 
+                id="apellidoMaterno" 
+                value={apellidoMaterno} 
+                onChange={(e) => setApellidoMaterno(e.target.value)} 
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="telefono">Nro Celular</label>
+              <input 
+                type="text" 
+                id="telefono" 
+                value={telefono} 
+                onChange={(e) => setTelefono(e.target.value)} 
+                required
+              />
+            </div>
+          </div>
 
           {/* Email y Contraseña */}
           <div className="form-row">

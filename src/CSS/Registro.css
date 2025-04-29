@@ -1,187 +1,138 @@
-/* Asegúrate de que el body ocupe toda la altura de la página y tenga scroll */
-html, body {
-  height: 100%; /* Asegura que la página ocupe toda la altura del navegador */
-  margin: 0; /* Elimina los márgenes por defecto */
-  overflow-y: auto; /* Habilita el scroll en toda la página */
-}
-
-/* Contenedor principal */
-.reservar-cita-container {
-  display: flex;
-  justify-content: center; /* Centra el contenido horizontalmente */
-  align-items: center; /* Centra el contenido verticalmente */
-  flex-direction: column; /* Apila los elementos en columna */
-  height: 100vh; /* Ocupar toda la altura de la ventana */
-  padding: 0; /* Elimina el padding para evitar que el fondo quede cubierto */
-
-  position: relative;
-}
-
-/* Fondo fijo */
-.reservar-cita-background {
-  position: fixed; /* Fijamos el fondo para que no se mueva */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('../portada-vinali.jpg'); /* Cambia la ruta a tu fondo */
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  z-index: -1; /* Mantiene el fondo detrás del formulario */
-}
-
-/* Contenedor del formulario */
-.reservar-cita-form-container {
-  width: 100%;
-  max-width: 600px; /* Limita el ancho del formulario */
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  position: relative;
-  z-index: 1;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-/* Formulario */
-.registro-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.reservar-cita-form-container {
-  margin-top: -20px;  /* Puedes ajustar este valor según tus necesidades */
-  padding-top: 20px;
-}
-
-.form-row div {
-  flex: 1;
-  min-width: 45%;
-}
-
-input, select {
-  width: 95%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-label {
-  font-size: 14px;
-  margin-bottom: 6px;
-}
-
-/* Estilos del botón */
-.form-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-button {
-  padding: 12px 20px;
-  background-color: #0066cc;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-  min-width: 150px;
-}
-
-button:hover {
-  background-color: #005bb5;
-}
-
-button:active {
-  background-color: #004c99;
-}
-
-button:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 102, 204, 0.5);
-}
-
-/* Logo */
-.logo-imagen {
-  display: block;
-  margin: 0 auto 20px;
-  max-width: 120px;
-}
-.button-back {
-  background-color: #ff4d4f;  /* Color rojo */
-  color: white;  /* Texto blanco */
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.button-back:hover {
-  background-color: #e30000;  /* Rojo más oscuro al pasar el ratón */
-}
-/* Estilos de los campos de input */
-input, select {
-  font-size: 16px;
-}
-
-input:focus, select:focus {
-  border-color: #0066cc;
-}
-
-/* En móviles */
-@media (max-width: 768px) {
-  .form-row {
-    flex-direction: column; /* Hace que los campos estén apilados en pantallas más pequeñas */
-
+/* Estilo para el contenedor principal del formulario */
+.registro_depend-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f7fb;
+    padding: 20px; /* Añadir padding para que el contenido no quede pegado a los bordes */
   }
-
-  .form-row div {
-    min-width: 100%; /* Asegura que los campos ocupen todo el ancho */
-  }
-
-  .reservar-cita-form-container {
+  
+  /* Contenedor para el formulario */
+  .registro_depend-form-container {
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
     width: 100%;
-    max-width: none; /* Asegura que no haya un ancho máximo en dispositivos pequeños */
+    max-width: 600px; /* Hacer que el formulario no sea más ancho que 600px */
+  }
+  
+  /* Título del formulario */
+  .registro_depend-form-container h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: #333;
+  }
+  
+  /* Estilo para las filas del formulario */
+  .registro_depend-form-group {
+    display: grid; /* Usamos grid para tener un control más preciso sobre las filas y columnas */
+    grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
+    gap: 20px; /* Espacio entre los elementos de la fila */
+    margin-bottom: 20px; /* Espacio entre las filas */
+  }
+  
+  /* Estilo de los labels */
+  .registro_depend-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  /* Estilo de los inputs y selects */
+  .registro_depend-form-group input,
+  .registro_depend-form-group select {
+    width: 100%; /* Aseguramos que los inputs ocupen todo el espacio de su contenedor */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  /* Estilo para los botones */
+  .registro_depend-form-actions button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #084a79;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .registro_depend-form-actions button:disabled {
+    background-color: #ccc;
+  }
+  
+  .registro_depend-form-actions button:hover {
+    background-color: #0066b2;
+  }
+  
+  /* Estilo para el botón de "Atrás" */
+  .registro_depend-button-back {
+    background-color: #f44336;
     margin-top: 10px;
   }
-}
-
-.boton-atras {
-  padding: 12px 20px;
-  background-color: #e74c3c; /* Rojo */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-  min-width: 150px;
-}
-
-.boton-atras:hover {
-  background-color: #c0392b; /* Rojo más oscuro al pasar el ratón */
-}
-
-.boton-atras:active {
-  background-color: #992d22; /* Rojo aún más oscuro al hacer clic */
-}
-
-.boton-atras:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(231, 76, 60, 0.5); /* Sombra de enfoque */
-}
-
+  
+  .registro_depend-button-back:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Media Queries para hacer que el formulario sea responsivo */
+  @media (max-width: 768px) {
+    .registro_depend-container {
+      padding: 10px; /* Reducción del padding en dispositivos más pequeños */
+    }
+  
+    .registro_depend-form-container {
+      padding: 20px; /* Reducir el padding dentro del formulario */
+      max-width: 100%; /* Permitir que el formulario ocupe todo el ancho disponible */
+    }
+  
+    .registro_depend-form-container h3 {
+      font-size: 20px; /* Ajuste del tamaño de fuente en el título para pantallas pequeñas */
+    }
+  
+    .registro_depend-form-group input,
+    .registro_depend-form-group select {
+      font-size: 14px; /* Reducir el tamaño de fuente en los campos de formulario */
+    }
+  
+    .registro_depend-form-actions button {
+      padding: 10px; /* Reducir el padding de los botones */
+      font-size: 14px; /* Reducir el tamaño de fuente del botón */
+    }
+  
+    /* Para que los campos se apilen en una sola columna en pantallas más pequeñas */
+    .registro_depend-form-group {
+      grid-template-columns: 1fr; /* Los inputs y selects ocupan toda la fila */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .registro_depend-container {
+      padding: 5px; /* Reducir aún más el padding en pantallas muy pequeñas */
+    }
+  
+    .registro_depend-form-container {
+      padding: 15px; /* Reducción del padding en pantallas más pequeñas */
+    }
+  
+    .registro_depend-form-container h3 {
+      font-size: 18px; /* Ajuste del tamaño de fuente en el título */
+    }
+  
+    .registro_depend-form-group input,
+    .registro_depend-form-group select {
+      font-size: 14px; /* Asegurarnos de que los inputs sean legibles en pantallas pequeñas */
+    }
+  
+    .registro_depend-form-actions button {
+      padding: 8px; /* Reducir más el tamaño del botón en pantallas más pequeñas */
+      font-size: 14px;
+    }
+  }

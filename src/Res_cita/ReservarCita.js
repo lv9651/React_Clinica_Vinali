@@ -4,7 +4,7 @@ import axios from 'axios';
 import { message } from 'antd';
 import { UsuarioContext } from '../context/AuthContext'; // Importa el contexto
 import '../CSS/ReservarCita.css';
-
+import { BASE_URL } from '../Medico/config'; 
 const ReservarCita = () => {
   const { setUser, usuario } = useContext(UsuarioContext); // Accede a setUser desde el contexto
   const [documento, setDocumento] = useState(''); // El DNI o documento
@@ -28,7 +28,7 @@ const ReservarCita = () => {
 
     try {
       // Hacemos la solicitud al backend para autenticar al usuario con DNI y clave
-      const response = await axios.post('https://localhost:7257/api/Usuario/autenticar', {
+      const response = await axios.post(`${BASE_URL}/api/Usuarios/autenticar`, {
         documento,
         clave
       });
@@ -39,6 +39,7 @@ const ReservarCita = () => {
         if (response.data.Mensaje === "Por favor, actualice sus datos.") {
           // Redirigir al formulario de actualización de datos
           navigate('/Registro_Act_datos', { state: { documento: documento } });
+           
         }
       } else {
         // Si la respuesta no tiene los datos de autenticación, mostramos un error
@@ -73,6 +74,10 @@ const ReservarCita = () => {
     navigate('/registrarse'); // Redirige a la página de registro
   };
 
+
+  const handleRecuperarClave = () => {
+    navigate('/recuperar-clave'); // Redirige a la página de registro
+  };
   // Si el usuario ya está autenticado, redirigir directamente
   if (usuario) {
     navigate('/menu'); // Si ya está logueado, redirigir automáticamente al menú
@@ -81,34 +86,36 @@ const ReservarCita = () => {
   return (
     <div className="reservar-cita-container">
       <div className="reservar-cita-background">
-        {/* Fondo de la empresa, puedes poner una imagen de fondo o un color */}
+        {/* Fondo de la empresa */}
       </div>
 
       <div className="reservar-cita-form-container">
-        <h2>Iniciar Sesion</h2>
+        <h2>Bienvenidos</h2>
 
         {!esInvitado ? (
           <>
             <form onSubmit={handleLogin} className="login-form">
               <div>
-                <label htmlFor="documento">Número de Documento</label>
+              
                 <input 
                   type="text" 
                   id="documento" 
                   value={documento} 
                   onChange={(e) => setDocumento(e.target.value)} 
                   required
+                  placeholder="Número de Documento" 
                 />
               </div>
 
               <div>
-                <label htmlFor="clave">Clave</label>
+   
                 <input 
                   type="password" 
                   id="clave" 
                   value={clave} 
                   onChange={(e) => setClave(e.target.value)} 
                   required
+                  placeholder="Contraseña" 
                 />
               </div>
 
@@ -120,21 +127,17 @@ const ReservarCita = () => {
                 </button>
               </div>
             </form>
-
+            
             <div className="opciones">
-              <a href="/recuperar-clave">¿Olvidaste tu contraseña?</a>
-             {/*  <button className="btn-invitado" onClick={handleAccederComoInvitado}>
-                Acceder como invitado
+              <button className="btn-contra" onClick={handleRecuperarClave}>
+                ¿Olvidaste tu contraseña?
               </button>
-
-              {/* Botón para redirigir al registro */}
               <button className="btn-registrarme" onClick={handleIrARegistro}>
                 Quiero registrarme
               </button>
             </div>
           </>
         ) : (
-          // Si el usuario accede como invitado
           <div>
             <p>Bienvenido, has accedido como invitado. Ahora puedes reservar tu cita.</p>
             <button onClick={() => setEsInvitado(false)}>Cerrar sesión como invitado</button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../CSS/FormularioPaciente.css'; 
+import '../CSS/FormularioPaciente.css';
+import { BASE_URL } from '../Medico/config';  
 
 const FormularioPaciente = ({ cli_codigo }) => {
   const [paciente, setPaciente] = useState(null);
@@ -10,7 +11,7 @@ const FormularioPaciente = ({ cli_codigo }) => {
     const fetchPacienteDetails = async () => {
       setLoading(true);  // Asegúrate de que la carga se inicia correctamente al cambiar cli_codigo
       try {
-        const response = await axios.get(`https://localhost:7257/api/Medico/buscarhistorialMedico/${cli_codigo}`);
+        const response = await axios.get(`${BASE_URL}/api/Medicos/buscarhistorialMedico/${cli_codigo}`);
         const data = response.data;
 
         if (Array.isArray(data) && data.length > 0) {

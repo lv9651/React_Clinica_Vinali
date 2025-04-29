@@ -1,13 +1,14 @@
 import React, { useState, useEffect,useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 import { UsuarioContext } from '../context/AuthContext';
 import Notification from '../Medico/Notification'; 
+import { BASE_URL } from './config'; 
+import '../CSS/Eleccion.css'; 
 
 const Eleccion = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { especialidad, medico, sucursal, dia, hora ,idesucursal,idhorariomedicodividido,idpaciente,Horariomedic} = location.state || {};
+  const { especialidad, medico, sucursal, dia, hora ,idesucursal,idhorariomedicodividido,idpaciente,Horariomedic,TipoModalidad} = location.state || {};
 
   const [selectedData, setSelectedData] = useState({
     especialidad,
@@ -16,20 +17,28 @@ const Eleccion = () => {
     dia,
     hora,
     idesucursal,
-    idhorariomedicodividido,idpaciente,Horariomedic
+    idhorariomedicodividido,idpaciente,Horariomedic,TipoModalidad
   });
   const [trans, setTrans] = useState('')
   const [tipoPago, setTipoPago] = useState([]);
   const [mostrarSelect, setMostrarSelect] = useState(false);
   const [documento, setDocumento] = useState('2'); // Guardar el tipo de documento
-  const precioFijo = 65; // Precio fijo
+  const [precioFijo, setPrecio] = useState('2'); 
+  const [idprecioprod, setIdprecioprod] = useState('2'); 
+
   const IGV = 0.18; // IGV del 18%
   const { user, logout ,dni, setUser,usuario} = useContext(UsuarioContext);
   const [notification, setNotification] = useState(null); 
   
   const calcularSubtotal = () => {
-    return precioFijo; // Subtotal siempre es igual al precio fijo
+    if(selectedData.TipoModalidad===2){
+      const precioDecimal = parseFloat(50);  // Convertir a número decimal
+      return precioDecimal; 
+    }
+    const precioDecimal = parseFloat(precioFijo);  // Convertir a número decimal
+    return precioDecimal;  // Subtotal es igual al precio convertido
   };
+
 
  
   const calcularTotal = () => {
@@ -49,7 +58,11 @@ const Eleccion = () => {
       }
 
       const script = document.createElement('script');
-      script.src = 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js';
+      script.src = 'https://checkout.izipay.pe/payments/v1/js/index.js';
+
+       {/*https://sandbox-checkout.izipay.pe/payments/v1/js/index.js*/}
+
+   
       script.async = true;
       script.onload = () => {
        {/*   console.log("Izipay SDK cargado correctamente");*/}
@@ -94,10 +107,38 @@ function addLeadingZero(number) {
 
 
   const obtenerTiposDePago = async () => {
+
+    const ListaPrecio = {
+      especialidad: selectedData.especialidad,
+      idsucursal: selectedData.idesucursal,
+ 
+    };
+
+
     try {
-      const response = await fetch('https://localhost:7257/api/Medico/ObtenerTipoPago');
+      const response = await fetch(`${BASE_URL}/api/Medicos/ObtenerTipoPago`);
       const data = await response.json();
       setTipoPago(data);
+
+      const responsee = await fetch(`${BASE_URL}/api/Medicos/buscarPrecio`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ListaPrecio),
+      });
+  
+      const dataa = await responsee.json();
+      
+      setPrecio(dataa[0].precio);
+      setIdprecioprod(dataa[0].idprecioproducto);
+
+      console.log(dataa[0].idprecioproducto);
+
+
+     
+
+
       setMostrarSelect(true);
     } catch (error) {
       console.error('Error al obtener los tipos de pago:', error);
@@ -125,7 +166,7 @@ function addLeadingZero(number) {
    
 
     try {
-      const response = await fetch('https://localhost:7257/api/Payment/process-payment', {
+      const response = await fetch(`${BASE_URL}/api/Payment/process-payment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,6 +175,8 @@ function addLeadingZero(number) {
       });
 
       const data = await response.json();
+   
+  
       if (data.code === "00" && data.message === "OK") {
         {/*  console.log('Obtener proceso éxito');
         console.log('Respuesta del servidor:', data);
@@ -146,13 +189,15 @@ function addLeadingZero(number) {
             config: {
               transactionId: transactionId,
               action: 'pay',
-              merchantCode: '4007701',
+              merchantCode: '4079862',
+              
+              //4007701
               order: {
                 orderNumber:  `${selectedData.Horariomedic}${selectedData.idhorariomedicodividido}${usuario.usuarioID}`,
                 currency: 'PEN',
                 amount: calcularTotal().toFixed(2),
                 processType: 'AT',
-                merchantBuyerId: '4007701',
+                merchantBuyerId: '4079862',
                 dateTimeTransaction: '1670258741603000',
               },
               billing: {
@@ -237,7 +282,7 @@ function addLeadingZero(number) {
   
     try {
       // Llamada a la API para procesar el pago y registrar la venta
-      const response = await fetch('https://localhost:7257/api/Citas/enviar-detalles-cita', {
+      const response = await fetch(`${BASE_URL}/api/Citas/enviar-detalles-cita`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -280,10 +325,10 @@ function addLeadingZero(number) {
         importe: calcularTotal().toFixed(2)
       }]),
       JsonVentaDetalle: JSON.stringify([{
-        idprecioproducto: 101,  // Este es un ejemplo, ajusta al producto correcto si es necesario
+        idprecioproducto: idprecioprod,  // Este es un ejemplo, ajusta al producto correcto si es necesario
         precio: calcularSubtotal().toFixed(2)
       }]),
-      UsuarioManipula: 666,  // El id del usuario que maneja la venta
+      UsuarioManipula: 32,  // El id del usuario que maneja la venta
       IdCita: selectedData.idcita, 
       idpaciente: selectedData.idpaciente, // Asegúrate de obtener este valor correctamente
       IdHorarioMedicoDividido: selectedData.idhorariomedicodividido  // Asegúrate de tener el valor correcto
@@ -291,7 +336,7 @@ function addLeadingZero(number) {
   
     try {
       // Llamada a la API para procesar el pago y registrar la venta
-      const response = await fetch('https://localhost:7257/api/Venta', {
+      const response = await fetch(`${BASE_URL}/api/Ventas`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -303,7 +348,49 @@ function addLeadingZero(number) {
   
       
       if (data.message==='Venta creada exitosamente.') {
-        // Si la venta se registra con éxito
+       
+
+        
+
+
+        try {
+          // Obtener el ID de la venta recién creada
+          const idVenta = data.idVenta;
+          
+          // Llamar a la segunda API con el ID de la venta
+          const responseNubefact = await fetch(`${BASE_URL}/api/Venta/EnviarJsonVentaNubefact/${idVenta}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            // Agrega body si necesitas enviar datos adicionales
+          });
+      
+          if (!responseNubefact.ok) {
+            throw new Error('Error al enviar a Nubefact');
+          }
+      
+          const resultNubefact = await responseNubefact.json();
+          setNotification({
+            message: 'Venta registrada y enviada a Nubefact exitosamente',
+            type: 'success',
+          });
+          
+        } catch (error) {
+          setNotification({
+            message: 'Venta registrada pero hubo un problema al enviar a Nubefact',
+            type: 'warning', // o 'error' según prefieras
+          });
+        }
+
+
+
+
+
+
+
+
+
       
        
       } else {
@@ -321,97 +408,91 @@ function addLeadingZero(number) {
     }
   };
 
-
   return (
     <div className="container mt-5" style={{ display: 'flex', justifyContent: 'space-between' }}>
-    {notification && (
-      <Notification
-        message={notification.message}
-        type={notification.type}
-        onClose={closeNotification}
-      />
-      
-    )}
-    
-    <div className="container mt-5" style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div className="row justify-content-center" style={{ flex: 1 }}>
-        <div className="col-md-8">
-          <div className="card shadow-lg p-4 border-0 rounded-4">
-            <div className="d-flex justify-content-start mb-4">
-              <button
-                className="btn btn-primary"
-                onClick={() => navigate(-1)}
-                style={{
-                  padding: '12px 10px',
-                  fontSize: '1.2rem',
-                  borderRadius: '25px',
-                  boxShadow: '0px 4px 10px rgba(0, 123, 255, 0.1)',
-                  transition: 'background-color 0.3s ease, transform 0.2s ease',
-                }}
-                onMouseEnter={(e) => (e.target.style.transform = 'scale(1.05)')}
-                onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}
-              >
-                Volver Atrás
-              </button>
-            </div>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={closeNotification}
+        />
+      )}
 
-            <h3 className="mb-4 text-center" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '900' }}>
-              Lo que has escogido hasta el momento
-            </h3>
+      <div className="container mt-0" style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div className="row justify-content-center" style={{ flex: 1 }}>
+          <div className="col-md-20">
+            <div className="card shadow-lg p-4 border-0 rounded-4">
+              <div className="d-flex justify-content-start mb-4">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate(-1)}
+                  style={{
+                    padding: '12px 10px',
+                    fontSize: '1.2rem',
+                    borderRadius: '25px',
+                    boxShadow: '0px 4px 10px rgba(0, 123, 255, 0.1)',
+                    transition: 'background-color 0.3s ease, transform 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => (e.target.style.transform = 'scale(1.05)')}
+                  onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}
+                >
+                  Volver Atrás
+                </button>
+              </div>
 
-            {/* Mostrar datos seleccionados */}
-            {[{ label: 'Especialidad', value: selectedData.especialidad, icon: 'heart-pulse-fill' },
-              { label: 'Médico', value: `Dr(a). ${selectedData.medico?.nombres} ${selectedData.medico?.apellidopaterno} ${selectedData.medico?.apellidomaterno}`, icon: 'person-fill' },
-              { label: 'Sucursal', value: selectedData.sucursal, icon: 'building' },
-              { label: 'Día', value: selectedData.dia, icon: 'calendar-date' },
-        
-         
-              { label: 'Hora', value: selectedData.hora, icon: 'clock' }].map((item, index) => (
-                <div key={index} className="card mb-3 border-0 rounded-3" style={{ backgroundColor: '#f9f9f9' }}>
-                  <div className="row align-items-center">
-                    <div className="col-10">
-                      <span style={{ fontSize: '1.3rem', fontWeight: '600', color: '#333' }}>{item.label}:</span>
+              <h3 className="mb-4 text-center" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '900' }}>
+                Lo que has escogido hasta el momento
+              </h3>
+
+              {/* Mostrar datos seleccionados */}
+              {[{ label: 'Especialidad', value: selectedData.especialidad, icon: 'heart-pulse-fill' },
+                { label: 'Médico', value: `Dr(a). ${selectedData.medico?.nombres} ${selectedData.medico?.apellidopaterno} ${selectedData.medico?.apellidomaterno}`, icon: 'person-fill' },
+                { label: 'Sucursal', value: selectedData.sucursal, icon: 'building' },
+                { label: 'Día', value: selectedData.dia, icon: 'calendar-date' },
+                { label: 'Hora', value: selectedData.hora, icon: 'clock' }].map((item, index) => (
+                  <div key={index} className="card mb-3 border-0 rounded-3" style={{ backgroundColor: '#f9f9f9' }}>
+                    <div className="row align-items-center">
+                      <div className="col-10">
+                        <span style={{ fontSize: '1.3rem', fontWeight: '600', color: '#333' }}>{item.label}:</span>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="row">
-                    <div className="col-12">
-                      <span
-                        style={{
-                          fontSize: '1.25rem',
-                          color: '#555',
-                          padding: '8px 12px',
-                          border: '2px solid #007BFF',
-                          borderRadius: '8px',
-                          backgroundColor: '#f1faff',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <i
-                          className={`bi bi-${item.icon}`}
+                    <div className="row">
+                      <div className="col-12">
+                        <span
                           style={{
-                            fontSize: '1.5rem',
-                            color: '#007BFF',
-                            marginRight: '8px',
+                            fontSize: '1.25rem',
+                            color: '#555',
+                            padding: '8px 12px',
+                            border: '2px solid #007BFF',
+                            borderRadius: '8px',
+                            backgroundColor: '#f1faff',
+                            display: 'inline-flex',
+                            alignItems: 'center',
                           }}
-                        ></i>
-                        {item.value}
-                      </span>
+                        >
+                          <i
+                            className={`bi bi-${item.icon}`}
+                            style={{
+                              fontSize: '1.5rem',
+                              color: '#007BFF',
+                              marginRight: '8px',
+                            }}
+                          ></i>
+                          {item.value}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-              ))}
+                ))}
 
+            </div>
           </div>
         </div>
       </div>
-      </div>
 
       {/* Mostrar el formulario de pago */}
-      <div className="col-md-3" style={{ marginLeft: '280px' }}>
-        <div className="card shadow p-4 border-0 rounded-4 text-center">
+      <div className="col-md-3 col-12" style={{ marginLeft: '0' }}>
+  <div className="card shadow p-4 border-0 rounded-4 text-center">
           <h4 className="mb-3" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '700', color: '#333' }}>
             Pago en Línea
           </h4>
@@ -433,30 +514,19 @@ function addLeadingZero(number) {
           </button>
 
           {mostrarSelect && (
-            <>
-             {/* <select className="form-select mb-3" style={{ marginTop: '20px' }}>
-                <option value="" disabled>
-                  Selecciona un tipo de pago
-                </option>
-                {tipoPago.map((tipo) => (
-                  <option key={tipo.codigo} value={tipo.codigo}>
-                    {tipo.descripcion}
-                  </option>
-                ))}
-              </select>*/}
-              <div>
-                <label style={{ fontWeight: '600', fontSize: '1.1rem', color: '#555' }}>
-                  Tipo de Documento:
-                </label>
-                <select
-                  className="form-select mt-2"
-                  value={documento}
-                  onChange={(e) => setDocumento(e.target.value)}
-                >
-                  <option value="2">Boleta</option>
-                  <option value="1">Factura</option>
-                </select>
-              </div>
+            <div>
+              <label style={{ fontWeight: '600', fontSize: '1.1rem', color: '#555' }}>
+                Tipo de Documento:
+              </label>
+              <select
+                className="form-select mt-2"
+                value={documento}
+                onChange={(e) => setDocumento(e.target.value)}
+              >
+                <option value="2">Boleta</option>
+                <option value="1">Factura</option>
+              </select>
+
               <div className="mt-4">
                 <p style={{ fontSize: '1rem', color: '#555', fontWeight: '600' }}>
                   Subtotal: S/ {calcularSubtotal().toFixed(2)}
@@ -470,30 +540,29 @@ function addLeadingZero(number) {
                   Total: S/ {calcularTotal().toFixed(2)}
                 </p>
                 <button
-  className="btn btn-primary"
-  style={{
-    padding: '12px 20px',
-    fontSize: '1.2rem',
-    borderRadius: '25px',
-    boxShadow: '0px 4px 10px rgba(0, 123, 255, 0.2)',
-    transition: 'background-color 0.3s ease, transform 0.2s ease',
-    backgroundColor: '#28a745', // Color de fondo verde
-    border: 'none', // Quitar borde si es necesario
-  }}
-  onMouseEnter={(e) => {
-    e.target.style.transform = 'scale(1.05)';
-    e.target.style.backgroundColor = '#218838'; // Color cuando el mouse pasa sobre el botón (verde más oscuro)
-  }}
-  onMouseLeave={(e) => {
-    e.target.style.transform = 'scale(1)';
-    e.target.style.backgroundColor = '#28a745'; // Restaurar color de fondo cuando el mouse sale
-  }}
-  onClick={realizarPago}
->
-  Pagar S/ {calcularTotal().toFixed(2)}
-</button>
+                  className="btn btn-primary"
+                  style={{
+                    padding: '12px 20px',
+                    fontSize: '1.2rem',
+                    borderRadius: '25px',
+                    boxShadow: '0px 4px 10px rgba(0, 123, 255, 0.2)',
+                    backgroundColor: '#28a745',
+                    border: 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'scale(1.05)';
+                    e.target.style.backgroundColor = '#218838';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'scale(1)';
+                    e.target.style.backgroundColor = '#28a745';
+                  }}
+                  onClick={realizarPago}
+                >
+                  Pagar S/ {calcularTotal().toFixed(2)}
+                </button>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>

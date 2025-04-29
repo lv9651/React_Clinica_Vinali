@@ -4,6 +4,10 @@ import logo from '../assets/docmed.jpg';
 import { useNavigate } from 'react-router-dom';
 import Notification from '../Medico/Notification'; 
 import { useLocation } from 'react-router-dom'; // 
+import { BASE_URL } from './config'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../CSS/Medico.css'; 
+
 const Especialidades = () => {
   const navigate = useNavigate();
   const [especialidades, setEspecialidades] = useState([]);
@@ -19,12 +23,14 @@ const Especialidades = () => {
   const [horamedsec ,setHormedicoDiv] = useState(null); 
   const [sucursales, setSucursales] = useState([]); // Estado para las sucursales
   const [selectedSucursal, setSelectedSucursal] = useState(null); 
+  const [selectedSucse, setSelectedSucse] = useState(null);
   const [allEspecialidades, setAllEspecialidades] = useState([]);
   const [allMedicoHorarios, setAllMedicoHorarios] = useState({});
   const [notification, setNotification] = useState(null); 
   const [horaromed, setHorariomed] = useState(''); 
   const location = useLocation();  
   const { cli_codigo } = location.state || {};  
+  const { tipo } = location.state || {}; 
   let idhorariomedicoString;
   const formatTime = (timeString) => {
     const date = new Date(`1970-01-01T${timeString}Z`);
@@ -41,7 +47,7 @@ const Especialidades = () => {
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get('https://localhost:7257/api/Medico');
+        const response = await axios.get(`${BASE_URL}/api/Medicos`);
         setEspecialidades(response.data);
         setFilteredEspecialidades(response.data);
       } catch (error) {
@@ -49,17 +55,9 @@ const Especialidades = () => {
       }
     };
 
-    const fetchSucursales = async () => {
-      try {
-        const response = await axios.get('https://localhost:7257/api/Medico/buscarSucursal');
-        setSucursales(response.data); // Guardar solo las sucursales
-      } catch (error) {
-        console.error('Error al obtener las sucursales:', error);
-      }
-    };
-
+  
     fetchEspecialidades();
-    fetchSucursales(); // Llamar a la API de sucursales
+
   }, []);
 
   const handleSelectEspecialidad = async (especialidad) => {
@@ -69,20 +67,34 @@ const Especialidades = () => {
     setSelectedDia(null);
     setSelectedHora([]);
 
+    
+   const fetchSucursales = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/Medicos/buscarSucursal?especialidad=${especialidad.descripcion}`);
+    setSucursales(response.data); // Guardar las sucursales obtenidas
+  } catch (error) {
+    console.error('Error al obtener las sucursales:', error);
+    setSucursales([]);  // Asegurarse de que sucursales se vacíe en caso de error
+  }
+};
+
+    fetchSucursales();
+
     try {
-      const response = await axios.get(`https://localhost:7257/api/Medico/buscar/${especialidad.descripcion}`);
+      const response = await axios.get(`${BASE_URL}/api/Medicos/buscar/${especialidad.descripcion}`);
       if (response.data && response.data.length > 0) {
         setSelectedEspecialidad(response.data);
         setAllEspecialidades(response.data);
         const colegio = response.data[0].numcolegiatura;
-        const colegioResponse = await axios.get(`https://localhost:7257/api/Medico/buscardia/${colegio}`);
+        const colegioResponse = await axios.get(`${BASE_URL}/api/Medicos/buscardia/${colegio}`);
         setColegioInfo(colegioResponse.data);
 
+    
 
         const horarios = {};
         for (const medico of response.data) {
           try {
-            const horarioResponse = await axios.get(`https://localhost:7257/api/Medico/buscardia/${medico.numcolegiatura}`);
+            const horarioResponse = await axios.get(`${BASE_URL}/api/Medicos/buscardia/${medico.numcolegiatura}`);
             horarios[medico.numcolegiatura] = horarioResponse.data || [];
           } catch (error) {
             console.error(`Error al obtener horarios de ${medico.nombres}:`, error);
@@ -97,6 +109,7 @@ const Especialidades = () => {
     } catch (error) {
       console.error('Error al buscar médicos por especialidad:', error);
     }
+    
   };
 
 
@@ -134,13 +147,15 @@ const Especialidades = () => {
 
     
     try {
-      const response = await axios.post('https://localhost:7257/api/Medico/buscardiahora', {
+      const response = await axios.post(`${BASE_URL}/api/Medicos/buscardiahora`, {
         fecha: fecha,
         colegio: idhorariomedicoString,
-        idmodalidad: String(1)
+        idmodalidad: String(tipo)
+      
+       
       });
 
-      
+    
 
       if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         const horariosDelDia = response.data.map((horario) => ({
@@ -212,7 +227,8 @@ const Especialidades = () => {
     hora: hora, // Hora seleccionada
     idhorariomedicodividido: idhorariomeddiv, // Hora seleccionada
     idpaciente:cli_codigo,
-    Horariomedic:horaromed 
+    Horariomedic:horaromed ,
+    TipoModalidad:tipo
   };
 
   // Navegar a Eleccion y pasar los datos como state
@@ -221,7 +237,12 @@ const Especialidades = () => {
   const handleSelectSucursal = (event) => {
     const selectedSucursalValue = event.target.value;
     setSelectedSucursal(selectedSucursalValue); // Guardar la sucursal seleccionada
-  
+
+    const sucursalSel = sucursales.find(sucursal => sucursal.idsucursal === selectedSucursalValue);
+    console.log(sucursalSel);
+    setSelectedSucse(sucursalSel.descripcion);
+    
+
     // Si hay médicos en allEspecialidades, filtrar por la sucursal seleccionada
     if (allEspecialidades.length > 0) {
       const filteredMedicos = allEspecialidades.filter(medico => 
@@ -274,7 +295,7 @@ const Especialidades = () => {
       onClose={() => setNotification(null)} // Función para cerrar la notificación
     />
   )}
-      <div style={{ flex: 1, marginRight: '20px' }}>
+    <div style={{ flex: '1 1 300px', marginRight: '20px' }}>
         <h3>Selecciona una Especialidad</h3>
         <input
           type="text"
@@ -283,22 +304,17 @@ const Especialidades = () => {
           onChange={handleSearch}
           style={{
             width: '100%',
-            padding: '10px',
-            marginBottom: '20px',
-            borderRadius: '5px',
-            border: '1px solid #ccc',
-            fontSize: '16px',
+    padding: '12px', // Un poco más de espacio en pantallas más grandes
+    marginBottom: '20px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    fontSize: '16px',
+    boxSizing: 'border-box',
           }}
         />
         <div
           className="row"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '15px',
-            maxHeight: '400px',
-            overflowY: 'auto',
-          }}
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', maxHeight: '400px', overflowY: 'auto' }}
         >
           {filteredEspecialidades.map((especialidad, index) => (
             <div key={index} className="mb-4" style={{ breakInside: 'avoid' }}>
@@ -325,36 +341,44 @@ const Especialidades = () => {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', maxHeight: '500px' }}>
+      <div style={{ flex: '1 1 300px', overflowY: 'auto', maxHeight: '500px' }}>
         {selectedEspecialidad.length > -1 ? (
           <div className="mt-4">
             <h5>Especialidad Seleccionada: {selectedEspecialidad[0]?.descripcion}</h5>
+            <h5>Sede Seleccionada:  {selectedSucse}</h5>
+
+        
 
             <div className="mb-4">
-              <label htmlFor="sucursal">Selecciona una Sucursal:</label>
-              <select
-                id="sucursal"
-                value={selectedSucursal}
-                onChange={handleSelectSucursal}
-                style={{
-                  width: '50%',
-                  padding: '10px',
-                  marginBottom: '20px',
-                  borderRadius: '5px',
-                  border: '1px solid #ccc',
-                  fontSize: '16px',
-                }}
-              >
-                <option value="">Seleccione una sucursal</option>
-                {sucursales.map((sucursal) => (
-                  <option key={sucursal.idsucursal} value={sucursal.idsucursal}>
-                    {sucursal.descripcion}
-                  </option>
-                ))}
-              </select>
-            </div>
+  <label htmlFor="sucursal">Selecciona una Sucursal:</label>
+  <select
+    id="sucursal"
+    value={selectedSucursal}
+    onChange={handleSelectSucursal}
+    style={{
+      width: '100%', // Ocupa todo el ancho disponible
+      padding: '10px',
+      marginBottom: '20px',
+      borderRadius: '5px',
+      border: '1px solid #ccc',
+      fontSize: '16px',
+      boxSizing: 'border-box',
+    }}
+  >
 
-
+    
+    {/* Si hay error o no hay sucursales, mostrar el mensaje */}
+    {sucursales.length === 0 ? (
+      <option value="" disabled>No hay sucursales disponibles</option>
+    ) : (
+      sucursales.map((sucursal) => (
+        <option key={sucursal.idsucursal} value={sucursal.idsucursal}>
+          {sucursal.descripcion}
+        </option>
+      ))
+    )}
+  </select>
+</div>
             <div
               style={{
                 display: 'grid',

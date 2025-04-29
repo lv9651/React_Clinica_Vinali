@@ -49,6 +49,9 @@
   html, body {
     overflow-x: hidden; /* Eliminar el desplazamiento horizontal */
   }
-
+  .col-md-3 {
+    width: 100%; /* Asegurarse de que el formulario de pago ocupe todo el ancho */
+    margin-left: 0; /* Eliminar margen */
+  }
 
 }

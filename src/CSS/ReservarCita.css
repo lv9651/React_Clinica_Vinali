@@ -7,7 +7,7 @@
 
 
 .reservar-cita-background {
-  background-image: url('../portada-vinali.jpg'); /* Coloca aquí la URL de tu imagen */
+  background-image: url('../FONDO_LOGIN.jpg'); /* Coloca aquí la URL de tu imagen */
   background-size: cover; /* Hace que la imagen cubra toda la pantalla */
   background-position: center;
   width: 80%; /* Toma la mitad de la pantalla */
@@ -72,61 +72,17 @@ button:focus {
   outline: none; /* Elimina el borde azul en algunos navegadores */
 }
 
-/* Botón de 'Iniciar sesión' */
-.btn-submit {
-  background-color: #007bff;
-  color: white;
+.form-actions button {
+  background-color: #084a79;  /* Cambia el fondo a un azul */
+  color: white;  /* El color del texto será blanco */
+  padding: 12px 24px;  /* Tamaño del botón */
+  border: none;  /* Sin borde */
+  border-radius: 4px;  /* Bordes redondeados */
+  font-size: 16px;  /* Tamaño de la fuente */
+  cursor: pointer;  /* Cambia el cursor a un puntero */
+  transition: background-color 0.3s ease;  /* Transición para el cambio de color */
 }
 
-.btn-submit:hover {
-  background-color: #0056b3;
-}
-
-/* Botón 'Acceder como invitado' */
-.btn-invitado {
-  background-color: #28a745;
-  color: white;
-  margin-top: 10px;
-}
-
-.btn-invitado:hover {
-  background-color: #218838;
-}
-
-/* Botón 'Quiero registrarme' */
-.btn-registrarme {
-  background-color: #ffc107;
-  color: white;
-  margin-top: 10px;
-}
-
-.btn-registrarme:hover {
-  background-color: #e0a800;
-}
-
-/* Botón 'Cerrar sesión' */
-.btn-logout {
-  background-color: #dc3545;
-  color: white;
-  margin-top: 20px;
-}
-
-.btn-logout:hover {
-  background-color: #c82333;
-}
-
-/* Estilo para el enlace de "Olvidaste tu contraseña?" */
-.link-recuperar {
-  color: #007bff;
-  text-decoration: none;
-  display: block;
-  margin-top: 10px;
-  text-align: center;
-}
-
-.link-recuperar:hover {
-  text-decoration: underline;
-}
 
 /* Estilo para las opciones (botones y enlaces) */
 .opciones {
@@ -134,4 +90,206 @@ button:focus {
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
+}
+
+html, body {
+  height: 100%; /* Asegura que la página ocupe toda la altura del navegador */
+  margin: 0;
+  overflow-y: auto;
+}
+
+.reservar-cita-container {
+  display: flex;
+  justify-content: center; /* Centra el contenido horizontalmente */
+  align-items: center; /* Centra el contenido verticalmente */
+  flex-direction: column;
+  height: 100vh; /* Ocupar toda la altura de la ventana */
+  padding: 0;
+  position: relative;
+}
+
+.reservar-cita-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../FONDO_LOGIN.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: -1;
+}
+
+.reservar-cita-form-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 15px;
+  background-color: #15afc6;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  position: relative;
+  z-index: 1;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.reservar-cita-form-container h2 {
+  color: white;  /* Aseguramos que el color sea blanco */
+  font-weight: bold;
+  font-size: 40px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+
+
+
+
+.input-field {
+  width: 100%; /* Para asegurarse de que el input ocupe todo el ancho disponible */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white; /* Fondo blanco para los inputs */
+  color: #333; /* Color del texto en los inputs */
+}
+
+input, select {
+  width: 100%; /* Para asegurarse de que el input ocupe todo el ancho disponible */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white; /* Fondo blanco para los inputs */
+  color: #333; /* Color del texto en los inputs */
+  text-align: center; /* Centrar el texto dentro del input */
+}
+
+
+
+
+input:focus::placeholder, select:focus::placeholder {
+  opacity: 0; /* Hace que el placeholder sea invisible cuando se está escribiendo */
+}
+
+
+
+
+
+
+.logo-imagen {
+  display: block;
+  margin: 0 auto 20px;
+  max-width: 100px;
+  width: 100%;
+}
+
+
+.opciones {
+  display: flex;
+  flex-direction: column; /* Alinea los botones en una columna */
+  align-items: center;
+  margin-top: 20px;
+  gap: 20px; /* Añade un espacio de 20px entre los botones */
+}
+
+/* Botones sin fondo, solo texto blanco y subrayado */
+.btn-contra, .btn-registrarme {
+  background-color: transparent; /* Elimina el fondo */
+  color: white; /* Color de texto blanco */
+  border: none; /* Elimina el borde */
+  padding: 0; /* Elimina el relleno */
+  font-size: 14px; /* Tamaño de la fuente */
+  text-decoration: underline; /* Aplica el subrayado */
+  cursor: pointer; /* Cambia el cursor a un puntero */
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Transición suave para el color y subrayado */
+}
+
+/* Hover en los botones */
+.btn-contra:hover, .btn-registrarme:hover {
+  color: #f1f1f1; /* Cambia el color del texto a un blanco más suave cuando el mouse pasa por encima */
+  text-decoration: none; /* Quita el subrayado cuando el mouse pasa por encima */
+  background-color: transparent; /* Asegura que no haya fondo al pasar el mouse */
+  outline: none; /* Elimina el borde azul en algunos navegadores */
+}
+
+/* Elimina el borde azul predeterminado de los botones al hacer clic o focus */
+.btn-contra:focus, .btn-registrarme:focus {
+  outline: none; /* Quita el borde azul que aparece en algunos navegadores */
+}
+
+.link-recuperar:hover, .link-registrarme:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-row div {
+    min-width: 100%;
+  }
+  .login-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.login-form div {
+  margin-bottom: 15px;
+}
+
+.login-form label {
+  font-weight: bold;
+}
+
+.login-form input {
+  padding: 8px;
+  margin-top: 5px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+
+  .reservar-cita-form-container {
+    padding: 15px;
+    margin-top: 10px;
+    max-width: none;
+  }
+
+  button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  label {
+    font-size: 12px;
+  }
+
+  input, select {
+    font-size: 14px;
+  }
+
+  button {
+    font-size: 14px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reservar-cita-form-container {
+    padding: 10px;
+  }
+
+  button {
+    font-size: 14px;
+  }
 }

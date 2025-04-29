@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import '../CSS/Registro.css';  // Asegúrate de agregar los estilos necesarios
+import '../CSS/Registroform.css';
 import logo from '../assets/Vinali.png';
-import axios from 'axios';  // Importamos axios
-import { message, Spin } from 'antd';  // Importamos Spin de Ant Design
-import { useNavigate } from 'react-router-dom'; // Importamos useNavigate para la redirección
+import axios from 'axios';
+import { message, Spin } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../Medico/config';
 
 const Registro = () => {
   const [tipoDocumento, setTipoDocumento] = useState('');
@@ -13,37 +14,36 @@ const Registro = () => {
   const [apellidoMaterno, setApellidoMaterno] = useState('');
   const [telefono, setTelefono] = useState('');
   const [correo, setCorreo] = useState('');
-
   const [contrasena, setContrasena] = useState('');
   const [repetirContrasena, setRepetirContrasena] = useState('');
   const [aceptoTerminos, setAceptoTerminos] = useState(false);
   const [autorizacionDatos, setAutorizacionDatos] = useState(false);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const [passwordsMatch, setPasswordsMatch] = useState(true); // Estado para verificar si las contraseñas coinciden
-  const [loading, setLoading] = useState(false); // Estado para controlar el indicador de carga
+  const navigate = useNavigate();
 
-  const navigate = useNavigate();  // Hook para la redirección
-
-  // Manejo del cambio en el campo de repetir contraseña
   const handleRepetirContrasenaChange = (e) => {
     setRepetirContrasena(e.target.value);
-    setPasswordsMatch(e.target.value === contrasena); // Verifica si las contraseñas coinciden
+    setPasswordsMatch(e.target.value === contrasena);
   };
 
   const handleRegistroSubmit = async (e) => {
-    e.preventDefault();  // Evita el comportamiento predeterminado del formulario
+    e.preventDefault();
+    if (contrasena !== repetirContrasena) {
+      message.error("Las contraseñas no coinciden.");
+      return;
+    }
 
-    // Validación de datos
     if (
       !tipoDocumento || !numeroDocumento || !nombres || !apellidoPaterno || !apellidoMaterno || 
-      !telefono || !correo || !contrasena || !repetirContrasena || contrasena !== repetirContrasena || 
+      !telefono || !correo || !contrasena || !repetirContrasena || 
       !aceptoTerminos || !autorizacionDatos
     ) {
       message.error("Por favor, completa todos los campos y acepta los términos y condiciones.");
       return;
     }
 
-    // Datos a enviar
     const datosRegistro = {
       tipoDocumento,
       numeroDocumento,
@@ -58,65 +58,35 @@ const Registro = () => {
     };
 
     try {
-      setLoading(true); // Activar el estado de carga
-      // Realizamos la llamada a la API usando axios
-      const response = await axios.post('https://localhost:7257/api/Usuario', datosRegistro, {
+      setLoading(true);
+      const response = await axios.post(`${BASE_URL}/api/Usuarios`, datosRegistro, {
         headers: {
-          'Content-Type': 'application/json', // Indicamos que estamos enviando datos en formato JSON
+          'Content-Type': 'application/json',
         },
       });
 
-      // Si la respuesta es exitosa, procesamos la respuesta
       message.success(`Registro correcto!`);
-
-      // Redirigir al usuario a la página de reservas si el registro es exitoso
-      navigate('/');  // Asegúrate de que esta ruta esté configurada en tu aplicación
-
+      navigate('/');
     } catch (error) {
       console.error('Error al registrar: ', error);
-
-      // Verificar el contenido de la respuesta de error (esto es para depuración)
-      console.log('Error response:', error.response);  // Esto nos ayudará a ver lo que estamos recibiendo de la API.
-
-      // Manejo de error cuando hay respuesta desde la API
-      if (error.response) {
-        let errorMessage = error.response.data;
-        console.log('Mensaje de error del servidor:', errorMessage);
-
-        if (errorMessage && errorMessage.startsWith("Internal server error:")) {
-          errorMessage = errorMessage.replace("Internal server error:", "").trim();
-        }
-
-        message.error(errorMessage);  // Mostrar el mensaje exacto del error enviado por el API
-      } else if (error.request) {
-        console.error('Error de red: ', error.request);
-        message.error('No se pudo conectar con el servidor. Por favor, inténtelo de nuevo.');
-      } else {
-        console.error('Error desconocido: ', error.message);
-        message.error('Ocurrió un error desconocido. Inténtalo más tarde.');
-      }
+      message.error('Ocurrió un error al registrar al usuario.');
     } finally {
-      setLoading(false); // Desactivar el estado de carga después de que se haya completado la solicitud
+      setLoading(false);
     }
   };
 
-  // Función para retroceder a la página anterior
   const handleAtrasClick = () => {
-    window.history.back(); // Vuelve a la página anterior
+    window.history.back();
   };
 
   return (
-    <div className="reservar-cita-container">
-      <div className="reservar-cita-background">
-        {/* Fondo se mantiene */}
-      </div>
-
-      <div className="reservar-cita-form-container">
+    <div className="registro-cliente-container">
+      <div className="registro-cliente-background"></div>
+      <div className="registro-cliente-form-container">
         <div className="logo-container">
           <img src={logo} alt="Logo de la empresa" className="logo-imagen" />
         </div>
         <h3>Registro de Usuario</h3>
-
         <form onSubmit={handleRegistroSubmit} className="registro-form">
           {/* Tipo de Documento y Nro de Documento */}
           <div className="form-row">
@@ -230,7 +200,6 @@ const Registro = () => {
                 onChange={handleRepetirContrasenaChange} 
                 required
               />
-              {/* Mostrar mensaje de error si las contraseñas no coinciden */}
               {!passwordsMatch && <label className="error-message">Las contraseñas no coinciden.</label>}
             </div>
           </div>
@@ -254,14 +223,14 @@ const Registro = () => {
                   checked={autorizacionDatos} 
                   onChange={(e) => setAutorizacionDatos(e.target.checked)} 
                 />
-                Autorizo el uso de mis datos personales para recibir información relacionada a la oferta de servicios médicos de Clínica Vinali.
+                Autorizo el uso de mis datos personales para recibir información relacionada a la oferta de servicios médicos.
               </label>
             </div>
           </div>
 
-          <div className="form-actions">
+          <div className="registro-cliente-form-actions">
             <button type="button" onClick={handleAtrasClick} className="boton-atras">Atrás</button>
-            <button type="submit" disabled={loading}>  {/* Deshabilitar el botón mientras carga */}
+            <button type="submit" disabled={loading}>
               {loading ? <Spin size="small" /> : 'Registrarme'}
             </button>
           </div>

@@ -1,29 +1,56 @@
-/* Asegúrate de que html y body cubran toda la pantalla */
-html, body {
-  height: 100%; /* Necesario para que el contenedor use toda la altura */
-  margin: 0;  /* Eliminar márgenes por defecto */
-}
-
+/* Bienvenido.css */
 .bienvenida-container {
-/* Ruta de la imagen */
-  background-size: cover; /* Hace que la imagen cubra todo el contenedor */
-  background-position: center; /* Centra la imagen */
-  background-repeat: no-repeat; /* No repite la imagen */
-  color: rgb(80, 6, 64);  /* Color del texto */
-  height: 70vh; /* Asegura que el contenedor ocupe toda la altura de la ventana */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 50vh;
+  background-size: cover;
+  background-position: center;
+  color: rgb(45, 11, 165);
   text-align: center;
+  padding: 1px;
 }
 
+.fondo-imagen {
+  width: 100%;
+  height: 300px; /* Ajusta la altura según necesites */
+  background-size: cover;
+  background-position: center;
+}
+
+/* Aseguramos que el texto no se desborde */
 .bienvenida-container h2 {
   font-size: 2.5rem;
-  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .bienvenida-container p {
-  font-size: 1.5rem;
-  font-weight: normal;
+  font-size: 1.2rem;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+  .bienvenida-container h2 {
+    font-size: 1.8rem; /* Reducir tamaño de fuente en pantallas más pequeñas */
+  }
+
+  .bienvenida-container p {
+    font-size: 1rem;
+  }
+}
+
+/* Media query para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .bienvenida-container {
+    padding: 10px;
+  }
+
+  .bienvenida-container h2 {
+    font-size: 1.5rem; /* Aumentar la adaptabilidad para móviles pequeños */
+  }
+
+  .bienvenida-container p {
+    font-size: 0.9rem;
+  }
 }

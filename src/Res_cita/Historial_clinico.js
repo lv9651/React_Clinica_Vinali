@@ -4,7 +4,7 @@ import { message } from 'antd';
 import { UsuarioContext } from '../context/AuthContext';
 import '../CSS/Historial_clinico.css'; // Asegúrate de importar el archivo CSS
 import FormularioPaciente from '../Res_cita/FormularioPaciente';
-
+import { BASE_URL } from '../Medico/config';  
 const HistoricoClinico = () => {
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const HistoricoClinico = () => {
 
     const fetchHistorial = async () => {
       try {
-        const response = await axios.get(`https://localhost:7257/api/Medico/buscapacientedependiente/${usuario.numeroDocumento}`);
+        const response = await axios.get(`${BASE_URL}/api/Medicos/buscapacientedependiente/${usuario.numeroDocumento}`);
         const data = response.data;
 
         if (data && data.length > 0) {

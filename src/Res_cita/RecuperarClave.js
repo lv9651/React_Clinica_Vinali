@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { message, Input, Button, Form, Card, Spin } from 'antd';  // Usamos Ant Design para los componentes
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../Medico/config';  
 const RecuperarClave = () => {
   const [dni, setdni] = useState('');
   const [codigo, setCodigo] = useState('');
@@ -23,7 +24,7 @@ const RecuperarClave = () => {
     try {
       // Enviar el DNI como un string directamente (sin un objeto JSON)
       await axios.post(
-        'https://localhost:7257/api/Usuario/recuperar-correo',
+        `${BASE_URL}/api/Usuarios/recuperar-correo `,
         JSON.stringify( dni ), // Enviamos el DNI en un objeto JSON
         {
           headers: {
@@ -48,7 +49,7 @@ const RecuperarClave = () => {
       return;
     }
     try {
-      const response = await axios.post('https://localhost:7257/api/Usuario/validar-codigo', { dni, codigo });
+      const response = await axios.post(`${BASE_URL}/api/Usuarios/validar-codigo`, { dni, codigo });
       if (response.data) {
         setCodigoValido(true);
         message.success('Código validado correctamente. Ahora puedes cambiar tu contraseña.');
@@ -69,7 +70,7 @@ const RecuperarClave = () => {
       return;
     }
     try {
-      await axios.post('https://localhost:7257/api/Usuario/cambiar-clave', { dni, nuevaContraseña });
+      await axios.post(`${BASE_URL}/api/Usuarios/cambiar-clave`, { dni, nuevaContraseña });
       message.success('Tu contraseña ha sido cambiada exitosamente.');
       navigate('/'); 
     } catch (error) {
