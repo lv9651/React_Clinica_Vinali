@@ -2,85 +2,87 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { message } from 'antd';
-import { UsuarioContext } from '../context/AuthContext'; // Importa el contexto
+import { UsuarioContext } from '../context/AuthContext';
 import '../CSS/ReservarCita.css';
-import { BASE_URL } from '../Medico/config'; 
+import { BASE_URL } from '../Medico/config';
+
 const ReservarCita = () => {
-  const { setUser, usuario } = useContext(UsuarioContext); // Accede a setUser desde el contexto
-  const [documento, setDocumento] = useState(''); // El DNI o documento
-  const [clave, setClave] = useState(''); // La clave
-  const [mensajeError, setMensajeError] = useState(''); // Mensaje de error
-  const [esInvitado, setEsInvitado] = useState(false); // Controlar si accede como invitado
-  const [cargando, setCargando] = useState(false); // Indicador de carga
-  const navigate = useNavigate(); // Redirección a otras rutas
+  const { setUser, usuario } = useContext(UsuarioContext);
+  const [documento, setDocumento] = useState('');
+  const [clave, setClave] = useState('');
+  const [mensajeError, setMensajeError] = useState('');
+  const [esInvitado, setEsInvitado] = useState(false);
+  const [cargando, setCargando] = useState(false);
+  const navigate = useNavigate();
 
   // Manejo del inicio de sesión
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevenimos el comportamiento por defecto del formulario
-    
-    // Validamos si ambos campos están llenos
+    e.preventDefault();
+
     if (!documento || !clave) {
       setMensajeError('Por favor ingresa tu número de documento y clave.');
       return;
     }
 
-    setCargando(true); // Activamos el indicador de carga
+    setCargando(true);
 
     try {
-      // Hacemos la solicitud al backend para autenticar al usuario con DNI y clave
       const response = await axios.post(`${BASE_URL}/api/Usuarios/autenticar`, {
         documento,
         clave
       });
 
       if (response.data.Mensaje) {
-        // Si la respuesta contiene los datos del usuario (o un token)
         setMensajeError(response.data.Mensaje);
+
         if (response.data.Mensaje === "Por favor, actualice sus datos.") {
-          // Redirigir al formulario de actualización de datos
           navigate('/Registro_Act_datos', { state: { documento: documento } });
-           
         }
+
       } else {
-        // Si la respuesta no tiene los datos de autenticación, mostramos un error
         const userData = response.data;
-   
-       // Guardamos los datos del usuario en el contexto global (o localStorage si prefieres)
-       setUser(userData); // Usamos el contexto para almacenar los datos del usuario
-       setMensajeError('');
-       message.success('Ingreso Exitoso!');
-     
-       // Redirigimos al menú principal de la aplicación
-       navigate('/bienvenida');
+
+        setUser(userData);
+        setMensajeError('');
+        message.success('Ingreso Exitoso!');
+
+        // Redireccionar según el origen
+        if (userData.origen === 'USUARIO_GENERAL') {
+          navigate('/dashboardmedico'); // Ruta para médicos
+        } else {
+          navigate('/bienvenida'); // Ruta para pacientes u otros usuarios
+        }
       }
     } catch (error) {
-      // Si ocurre un error con la solicitud, mostramos un mensaje de error
       console.error('Error al intentar iniciar sesión: ', error);
       message.error('Clave incorrecta');
     } finally {
-      setCargando(false); // Desactivamos el indicador de carga
+      setCargando(false);
     }
   };
 
-
-  // Manejar el acceso como in;vitado
+  // Manejar el acceso como invitado
   const handleAccederComoInvitado = () => {
     setEsInvitado(true);
     console.log('Accediendo como invitado');
   };
 
-  // Redirigir al registro
   const handleIrARegistro = () => {
-    navigate('/registrarse'); // Redirige a la página de registro
+    navigate('/registrarse');
   };
-
 
   const handleRecuperarClave = () => {
-    navigate('/recuperar-clave'); // Redirige a la página de registro
+    navigate('/recuperar-clave');
   };
+
   // Si el usuario ya está autenticado, redirigir directamente
   if (usuario) {
-    navigate('/menu'); // Si ya está logueado, redirigir automáticamente al menú
+    if (usuario.origen === 'USUARIO_GENERAL') {
+      navigate('/dashboardmedico');
+    } else {
+      navigate('/bienvenida');
+    }
+    return null; // Para evitar que se siga renderizando el formulario
   }
 
   return (
@@ -96,7 +98,6 @@ const ReservarCita = () => {
           <>
             <form onSubmit={handleLogin} className="login-form">
               <div>
-              
                 <input 
                   type="text" 
                   id="documento" 
@@ -108,7 +109,6 @@ const ReservarCita = () => {
               </div>
 
               <div>
-   
                 <input 
                   type="password" 
                   id="clave" 
@@ -149,3 +149,4 @@ const ReservarCita = () => {
 };
 
 export default ReservarCita;
+

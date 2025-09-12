@@ -13,6 +13,7 @@ import Perfamiliar from './Medico/S_per_familiar';
 import Eleccion from './Medico/Eleccion';
 import Bienvenida from './components/Bienvenida';
 import Hist_Clinico from './Res_cita/Historial_clinico';
+import DashboardMedico from './Res_cita/DashboardMedico'; 
 import { UsuarioProvider } from './context/AuthContext'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/S_per_familiar" element={<MenuG><Perfamiliar /></MenuG>} />
           <Route path="/Registro_depend" element={<MenuG><Registrodepen /></MenuG>} />
           <Route path="/Historial_clinico" element={<MenuG><Hist_Clinico /></MenuG>} />
+                 <Route path="/dashboardmedico" element={<DashboardMedico />} />
         </Routes>
       </UsuarioProvider>
     </div>

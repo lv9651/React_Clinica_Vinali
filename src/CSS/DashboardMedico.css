@@ -1,0 +1,228 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ==== SIDEBAR ==== */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #004d61, #006d77);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+.sidebar-header .icono-logo {
+  color: #fff;
+}
+
+.titulo {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* ==== MENÚ ==== */
+.menu {
+  flex-grow: 1;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.menu-btn.activo {
+  background: #00afb9;
+  font-weight: bold;
+}
+
+/* ==== LOGOUT ==== */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: #ef476f;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #d43f5e;
+}
+
+.bienvenida {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: #dcdcdc;
+  text-align: center;
+}
+
+.saludo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #084a79;
+  margin-bottom: 20px;
+}
+
+/* ==== CONTENIDO ==== */
+.contenido {
+  flex-grow: 1;
+  background: #f8f9fa;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 2rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  color: #004d61;
+}
+
+/* ==== REPORTE ==== */
+.reporte-container {
+  width: 100%;
+  max-width: 900px;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.reporte-container h2 {
+  margin-bottom: 1.5rem;
+  color: #004d61;
+  text-align: center;
+}
+
+/* Tabla de horarios */
+.tabla-horarios {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.tabla-horarios th,
+.tabla-horarios td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabla-horarios th {
+  background: #006d77;
+  color: #fff;
+  font-weight: 600;
+}
+
+.tabla-horarios tr:nth-child(even) {
+  background: #f4f9f9;
+}
+
+.tabla-horarios tr:hover {
+  background: #e9f5f5;
+  transition: background 0.3s;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-presencial {
+  background: #06d6a0;
+  color: #fff;
+}
+
+.badge-virtual {
+  background: #118ab2;
+  color: #fff;
+}
+
+/* Textos de estados */
+.loading-text {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+.tabla-consultas {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem; /* texto más pequeño */
+}
+
+.tabla-consultas th,
+.tabla-consultas td {
+  border: 1px solid #ddd;
+  padding: 6px 8px; /* menos espacio */
+  text-align: center;
+}
+
+.tabla-consultas th {
+  background-color: #f4f6f8;
+  font-weight: bold;
+}
+
+.tabla-consultas tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.tabla-consultas tfoot td {
+  background-color: #e8f5e9;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+.empty-text {
+  text-align: center;
+  color: #888;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
