@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { UsuarioContext } from "../context/AuthContext";
 import "../CSS/DashboardMedico.css";
-
+import { BASE_URL } from '../Medico/config'; 
 const DashboardMedico = () => {
   const [menuActivo, setMenuActivo] = useState("reporte");
   const [horarios, setHorarios] = useState([]);
@@ -16,7 +16,7 @@ const DashboardMedico = () => {
     if (menuActivo === "horario" && usuario?.usuarioID) {
       setLoading(true);
       fetch(
-        `https://localhost:7146/api/HorarioMedico/ListarHorarioMedicoxIdMedico/${usuario.usuarioID}`
+        `${BASE_URL}/api/HorarioMedico/ListarHorarioMedicoxIdMedico/${usuario.usuarioID}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -47,7 +47,7 @@ const DashboardMedico = () => {
 
     setLoading(true);
 
-    const url = `https://localhost:7146/api/Medicos/consultas?fechaInicio=${fechaInicioSinHora}&fechaFin=${fechaFinSinHora}&usuarioId=${usuario.usuarioID}`;
+    const url = `${BASE_URL}/api/Medicos/consultas?fechaInicio=${fechaInicioSinHora}&fechaFin=${fechaFinSinHora}&usuarioId=${usuario.usuarioID}`;
     console.log("URL de la API:", url);
 
     fetch(url)
