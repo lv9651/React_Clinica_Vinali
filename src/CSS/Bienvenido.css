@@ -1,56 +1,651 @@
-/* Bienvenido.css */
-.bienvenida-container {
+/* ============================================================ */
+/* HOME PAGE                                                     */
+/* ============================================================ */
+.home-page {
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  color: #2d3748;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.section {
+  padding: 50px 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.section-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a2b47;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.section-link {
+  color: #1a2b47;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.section-link:hover {
+  color: #34b8c5;
+}
+
+/* ============================================================ */
+/* HERO                                                          */
+/* ============================================================ */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  background: linear-gradient(135deg, #f0f9fb 0%, #e0f2f5 100%);
+  border-radius: 25px;
+  padding: 50px;
+  margin-bottom: 50px;
+}
+
+.hero-left {
+  flex: 1;
+}
+
+.hero-subtitle {
+  color: #718096;
+  font-size: 13px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #1a3a5c;
+  margin-bottom: 20px;
+}
+
+.hero-highlight {
+  color: #34b8c5;
+}
+
+.hero-text {
+  font-size: 15px;
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  max-width: 450px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.btn-primary {
+  background-color: #1a3a5c;
+  color: white;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #34b8c5;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #1a3a5c;
+  padding: 12px 28px;
+  border: 2px solid #1a3a5c;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #1a3a5c;
+  color: white;
+}
+
+.hero-question {
+  font-size: 14px;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.hero-question strong {
+  color: #1a3a5c;
+  font-size: 15px;
+}
+
+.hero-link {
+  color: #1a3a5c;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1px;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.hero-link:hover {
+  color: #34b8c5;
+}
+
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-right img {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+/* ============================================================ */
+/* SEDES CERCA DE TI - Carrusel horizontal (como el PDF)        */
+/* ============================================================ */
+.sedes-section {
+  padding: 40px 0 50px 0;
+}
+
+.sedes-wrapper {
+  position: relative;
+}
+
+.sedes-carousel {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sedes-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.sede-card {
+  flex: 0 0 280px;
+  background: #ffffff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.sede-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.sede-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.sede-sin-imagen {
+  width: 100%;
+  height: 160px;
+  background: #e8eef5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a0aec0;
+  font-size: 14px;
+}
+
+.sede-card p {
+  padding: 15px 20px;
+  font-weight: 600;
+  text-align: left;
+  color: #1a2b47;
+  font-size: 16px;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.sedes-arrow {
+  position: absolute;
+  right: 0;
+  top: 55%;
+  transform: translateY(-50%);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  color: #1a2b47;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.sedes-arrow:hover {
+  background: #1a2b47;
+  color: white;
+  transform: translateY(-50%) scale(1.05);
+}
+
+/* ============================================================ */
+/* TESTIMONIO                                                    */
+/* ============================================================ */
+.testimonio-card {
+  display: flex;
+  background: #f0f9fb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.testimonio-info {
+  flex: 1;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  height: 50vh;
-  background-size: cover;
-  background-position: center;
-  color: rgb(45, 11, 165);
-  text-align: center;
-  padding: 1px;
 }
 
-.fondo-imagen {
+.testimonio-texto {
+  font-size: 17px;
+  font-style: italic;
+  color: #2d3748;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.testimonio-estrellas {
+  color: #34b8c5;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.testimonio-nombre {
+  font-size: 16px;
+  color: #1a3a5c;
+  margin: 0;
+}
+
+.testimonio-rol {
+  font-size: 13px;
+  color: #718096;
+  margin: 5px 0 0;
+}
+
+.testimonio-imagen {
+  flex: 1;
+}
+
+.testimonio-imagen img {
   width: 100%;
-  height: 300px; /* Ajusta la altura según necesites */
-  background-size: cover;
-  background-position: center;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* Aseguramos que el texto no se desborde */
-.bienvenida-container h2 {
-  font-size: 2.5rem;
+/* ============================================================ */
+/* CLUB VINALI                                                   */
+/* ============================================================ */
+.club-section {
+  display: flex;
+  gap: 30px;
+  align-items: stretch;
+}
+
+.club-info {
+  flex: 1;
+  padding: 40px;
+  background: #f0f9fb;
+  border-radius: 20px;
+}
+
+.club-info h3 {
+  font-size: 28px;
+  color: #1a3a5c;
+  margin-bottom: 15px;
+  line-height: 1.3;
+}
+
+.club-info p {
+  color: #4a5568;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.club-puntos-card {
+  flex: 1;
+  background: linear-gradient(135deg, #1a3a5c 0%, #2d5a7a 100%);
+  color: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.puntos-numero {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.puntos-label {
+  font-size: 14px;
+  opacity: 0.8;
+  margin: 8px 0;
+}
+
+.nivel {
+  font-size: 15px;
+  margin: 10px 0;
+}
+
+.faltantes {
+  font-size: 12px;
+  opacity: 0.7;
+  margin: 10px 0;
+}
+
+.progreso-barra {
+  background: rgba(255, 255, 255, 0.2);
+  height: 8px;
+  border-radius: 4px;
+  margin-top: 15px;
+  overflow: hidden;
+}
+
+.progreso-fill {
+  background: #34b8c5;
+  height: 100%;
+  border-radius: 4px;
+}
+
+/* ============================================================ */
+/* PRODUCTOS                                                     */
+/* ============================================================ */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.producto-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+}
+
+.producto-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.producto-card h4 {
+  font-size: 14px;
+  color: #1a3a5c;
+  margin-bottom: 5px;
+}
+
+.producto-marca {
+  font-size: 12px;
+  color: #718096;
+  margin-bottom: 15px;
+}
+
+.btn-agregar {
+  background-color: #1a3a5c;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s;
+}
+
+.btn-agregar:hover {
+  background-color: #34b8c5;
+}
+
+/* ============================================================ */
+/* ¿POR QUÉ ELEGIR VINALI?                                       */
+/* ============================================================ */
+.porque-section {
+  text-align: center;
+}
+
+.porque-section h2 {
+  font-size: 28px;
+  color: #1a3a5c;
+  margin-bottom: 40px;
+}
+
+.porque-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 30px;
+}
+
+.porque-item {
+  text-align: center;
+}
+
+.porque-icono {
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.porque-item h4 {
+  font-size: 14px;
+  color: #1a3a5c;
+  margin-bottom: 8px;
+}
+
+.porque-item p {
+  font-size: 12px;
+  color: #718096;
+  line-height: 1.5;
+}
+
+/* ============================================================ */
+/* TRATAMIENTOS                                                  */
+/* ============================================================ */
+.tratamientos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.tratamiento-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  transition: transform 0.3s;
+}
+
+.tratamiento-card:hover {
+  transform: translateY(-5px);
+}
+
+.tratamiento-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.tratamiento-card h4 {
+  font-size: 16px;
+  color: #1a3a5c;
+  margin-bottom: 8px;
+}
+
+.tratamiento-card p {
+  font-size: 13px;
+  color: #718096;
+  line-height: 1.5;
   margin-bottom: 10px;
 }
 
-.bienvenida-container p {
-  font-size: 1.2rem;
+.precio {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a3a5c;
+  margin-bottom: 15px;
 }
 
-/* Media query para pantallas pequeñas */
-@media (max-width: 768px) {
-  .bienvenida-container h2 {
-    font-size: 1.8rem; /* Reducir tamaño de fuente en pantallas más pequeñas */
+.btn-reservar {
+  background-color: #1a3a5c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s;
+}
+
+.btn-reservar:hover {
+  background-color: #34b8c5;
+}
+
+/* ============================================================ */
+/* RESERVA SEGURA                                                */
+/* ============================================================ */
+.reserva-segura-section {
+  padding: 30px 0 60px;
+}
+
+.reserva-segura-card {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: #f0f9fb;
+  padding: 30px 40px;
+  border-radius: 20px;
+}
+
+.reserva-icono {
+  font-size: 50px;
+}
+
+.reserva-info h3 {
+  font-size: 20px;
+  color: #1a3a5c;
+  margin-bottom: 8px;
+}
+
+.reserva-info p {
+  font-size: 14px;
+  color: #4a5568;
+  margin: 0;
+}
+
+/* ============================================================ */
+/* RESPONSIVE                                                    */
+/* ============================================================ */
+@media (max-width: 968px) {
+  .hero {
+    flex-direction: column;
+    padding: 30px 20px;
   }
 
-  .bienvenida-container p {
-    font-size: 1rem;
+  .hero-title {
+    font-size: 32px;
+  }
+
+  .club-section {
+    flex-direction: column;
+  }
+
+  .testimonio-card {
+    flex-direction: column;
+  }
+
+  .testimonio-imagen img {
+    height: 250px;
+  }
+
+  .reserva-segura-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .sede-card {
+    flex: 0 0 240px;
+  }
+
+  .section-header h2 {
+    font-size: 22px;
   }
 }
 
-/* Media query para pantallas muy pequeñas */
-@media (max-width: 480px) {
-  .bienvenida-container {
-    padding: 10px;
+@media (max-width: 600px) {
+  .sede-card {
+    flex: 0 0 220px;
   }
 
-  .bienvenida-container h2 {
-    font-size: 1.5rem; /* Aumentar la adaptabilidad para móviles pequeños */
+  .section-header h2 {
+    font-size: 20px;
   }
 
-  .bienvenida-container p {
-    font-size: 0.9rem;
+  .sedes-arrow {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
   }
 }

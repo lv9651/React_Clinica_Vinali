@@ -1,247 +1,410 @@
-import React, { useState } from 'react';
-import '../CSS/Registro.css';  // Asegúrate de agregar los estilos necesarios
+import React, { useState, useEffect } from 'react';
+import '../CSS/Registro.css';
 import logo from '../assets/Vinali.png';
-import axios from 'axios';  // Importamos axios
-import { message, Spin } from 'antd';  // Importamos Spin de Ant Design
-import { useNavigate } from 'react-router-dom'; // Importamos useNavigate para la redirección
-import { useLocation } from 'react-router-dom';
-import { BASE_URL } from '../Medico/config'; 
+import axios from 'axios';
+import { message, Spin } from 'antd';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { BASE_URL } from '../Medico/config';
+
+const extraerMensaje = (data) => {
+  if (!data) return 'Error desconocido';
+  if (typeof data === 'string') return data;
+  if (data.Mensaje && typeof data.Mensaje === 'string') return data.Mensaje;
+  if (data.mensaje && typeof data.mensaje === 'string') return data.mensaje;
+  if (data.title && typeof data.title === 'string') return data.title;
+  return 'Error desconocido';
+};
+
 const Registro_act = () => {
-  const location = useLocation(); // Obtener el estado de la navegación
-  const { documento } = location.state || {}; 
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const [nombres, setNombres] = useState('');
-  const [apellidoPaterno, setApellidoPaterno] = useState('');
-  const [apellidoMaterno, setApellidoMaterno] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [correo, setCorreo] = useState('');
+  const {
+    documento,
+    idCliente,
+    email,
+    nombres: nombresGoogle,
+    apePaterno: apePaternoGoogle,
+    apeMaterno: apeMaternoGoogle,
+    celular: celularGoogle,
+    modo
+  } = location.state || {};
 
+  const [tipoDocumento, setTipoDocumento] = useState('DNI');
+  const [numDocumento, setNumDocumento] = useState(documento || '');
+  const [nombres, setNombres] = useState(nombresGoogle || '');
+  const [apellidoPaterno, setApellidoPaterno] = useState(apePaternoGoogle || '');
+  const [apellidoMaterno, setApellidoMaterno] = useState(apeMaternoGoogle || '');
+  const [telefono, setTelefono] = useState(celularGoogle || '');
+  const [correo, setCorreo] = useState(email || '');
+  const [direccion, setDireccion] = useState('');
+  const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [repetirContrasena, setRepetirContrasena] = useState('');
   const [aceptoTerminos, setAceptoTerminos] = useState(false);
   const [autorizacionDatos, setAutorizacionDatos] = useState(false);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [mensajeError, setMensajeError] = useState('');
 
-  const [passwordsMatch, setPasswordsMatch] = useState(true); // Estado para verificar si las contraseñas coinciden
-  const [loading, setLoading] = useState(false); // Estado para controlar el indicador de carga
+  const claveObligatoria = modo !== 'completar';
 
-  const navigate = useNavigate();  // Hook para la redirección
+  const titulo = modo === 'activar'
+    ? 'Activa tu cuenta'
+    : modo === 'completar'
+      ? 'Completa tus datos'
+      : 'Actualización de datos';
 
-  // Manejo del cambio en el campo de repetir contraseña
   const handleRepetirContrasenaChange = (e) => {
     setRepetirContrasena(e.target.value);
-    setPasswordsMatch(e.target.value === contrasena); // Verifica si las contraseñas coinciden
+    setPasswordsMatch(e.target.value === contrasena);
   };
-  console.log(documento);
+
+  useEffect(() => {
+    if (contrasena && repetirContrasena) {
+      setPasswordsMatch(contrasena === repetirContrasena);
+    }
+  }, [contrasena, repetirContrasena]);
 
   const handleRegistroSubmit = async (e) => {
-    e.preventDefault();  // Evita el comportamiento predeterminado del formulario
+    e.preventDefault();
+    setMensajeError('');
 
-    // Validación de datos
-    if (
-    !contrasena || !repetirContrasena || contrasena !== repetirContrasena || 
-      !aceptoTerminos || !autorizacionDatos
-    ) {
-      message.error("Por favor, completa todos los campos y acepta los términos y condiciones.");
+    if (claveObligatoria) {
+      if (!contrasena || !repetirContrasena || contrasena !== repetirContrasena) {
+        setMensajeError('Las contraseñas no coinciden o están vacías.');
+        return;
+      }
+    } else {
+      if (contrasena || repetirContrasena) {
+        if (contrasena !== repetirContrasena) {
+          setMensajeError('Las contraseñas no coinciden.');
+          return;
+        }
+      }
+    }
+
+    if (!aceptoTerminos || !autorizacionDatos) {
+      setMensajeError('Debes aceptar los términos y autorizar el uso de datos.');
       return;
     }
 
-    // Datos a enviar
-    const datosRegistro = {
-      
-      dni:documento,
-      nombre:nombres,
-      apePat:apellidoPaterno,
-      apeMat:apellidoMaterno,
-      celular:telefono,
-      email:correo,
-      clave:contrasena,
-      aceptTer:aceptoTerminos,
-      Aut:autorizacionDatos,
-    };
-    const payload = {
-      json: JSON.stringify(datosRegistro)  // Convertimos el objeto en un string JSON
-    };
+    setLoading(true);
+
     try {
-      setLoading(true); // Activar el estado de carga
-      // Realizamos la llamada a la API usando axios
-      const response = await axios.post(`${BASE_URL}/api/Medicos/Act_cli_Vin`, payload, {
-        headers: {
-          'Content-Type': 'application/json', // Indicamos que estamos enviando datos en formato JSON
-        },
-      });
+      // MODO 'activar'
+      if (modo === 'activar') {
+        const payload = {
+          numDocumento: numDocumento,
+          nuevaClave: contrasena,
+          email: correo,
+          celular: telefono
+        };
 
-      // Si la respuesta es exitosa, procesamos la respuesta
-      message.success(`Actualizacion correcto!`);
+        const response = await axios.post(
+          `${BASE_URL}/api/Usuarios/activar-cuenta`,
+          payload,
+          { headers: { 'Content-Type': 'application/json' } }
+        );
 
-      // Redirigir al usuario a la página de reservas si el registro es exitoso
-      navigate('/');  // Asegúrate de que esta ruta esté configurada en tu aplicación
+        if (response.data.Accion === 'OK') {
+          message.success('¡Cuenta activada exitosamente!');
+          navigate('/bienvenida');
+        } else {
+          const msg = extraerMensaje(response.data);
+          message.error(msg);
+          setMensajeError(msg);
+        }
+        return;
+      }
+
+      // MODO 'completar'
+      if (modo === 'completar') {
+        const response = await axios.post(
+          `${BASE_URL}/api/Usuarios/vincular-google-pos`,
+          {
+            email: correo,
+            numDocumentoPOS: numDocumento,
+            nombres: nombres,
+            apePaterno: apellidoPaterno,
+            apeMaterno: apellidoMaterno,
+            celular: telefono,
+            direccion: direccion,
+            fechaNacimiento: fechaNacimiento || null,
+            clave: contrasena || null
+          },
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        if (response.data.Accion === 'OK') {
+          message.success(
+            contrasena
+              ? '¡Datos guardados! Ahora puedes entrar con DNI o con Google.'
+              : '¡Datos guardados! Puedes entrar con Google.'
+          );
+          navigate('/bienvenida');
+        } else {
+          const msg = extraerMensaje(response.data);
+          message.error(msg);
+          setMensajeError(msg);
+        }
+        return;
+      }
+
+      // MODO undefined → Registro nuevo
+      const datosRegistro = {
+        numDocumento: numDocumento,
+        nombres: nombres,
+        apePaterno: apellidoPaterno,
+        apeMaterno: apellidoMaterno,
+        email: correo,
+        celular: telefono,
+        clave: contrasena,
+        idDocumento: tipoDocumento === 'DNI' ? 1 : 2
+      };
+
+      const response = await axios.post(
+        `${BASE_URL}/api/Usuarios/registrar`,
+        datosRegistro,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      if (response.data.Accion === 'OK') {
+        message.success('¡Registro exitoso!');
+        navigate('/bienvenida');
+      } else {
+        const msg = extraerMensaje(response.data);
+        message.error(msg);
+        setMensajeError(msg);
+      }
 
     } catch (error) {
-      console.error('Error al registrar: ', error);
-
-      // Verificar el contenido de la respuesta de error (esto es para depuración)
-      console.log('Error response:', error.response);  // Esto nos ayudará a ver lo que estamos recibiendo de la API.
-
-      // Manejo de error cuando hay respuesta desde la API
+      console.error('Error al procesar la solicitud: ', error);
+      let errorMessage = 'Error desconocido';
       if (error.response) {
-        let errorMessage = error.response.data;
-        console.log('Mensaje de error del servidor:', errorMessage);
-
-        if (errorMessage && errorMessage.startsWith("Internal server error:")) {
-          errorMessage = errorMessage.replace("Internal server error:", "").trim();
-        }
-
-        message.error(errorMessage);  // Mostrar el mensaje exacto del error enviado por el API
+        errorMessage = extraerMensaje(error.response.data);
       } else if (error.request) {
-        console.error('Error de red: ', error.request);
-        message.error('No se pudo conectar con el servidor. Por favor, inténtelo de nuevo.');
+        errorMessage = 'No se pudo conectar con el servidor.';
       } else {
-        console.error('Error desconocido: ', error.message);
-        message.error('Ocurrió un error desconocido. Inténtalo más tarde.');
+        errorMessage = error.message || 'Error desconocido';
       }
+      message.error(errorMessage);
+      setMensajeError(errorMessage);
     } finally {
-      setLoading(false); // Desactivar el estado de carga después de que se haya completado la solicitud
+      setLoading(false);
     }
   };
 
-  // Función para retroceder a la página anterior
   const handleAtrasClick = () => {
-    window.history.back(); // Vuelve a la página anterior
+    navigate(-1);
   };
 
- 
   return (
     <div className="reservar-cita-container">
-      <div className="reservar-cita-background">
-        {/* Fondo se mantiene */}
-      </div>
+      <div className="reservar-cita-background"></div>
 
       <div className="reservar-cita-form-container">
         <div className="logo-container">
           <img src={logo} alt="Logo de la empresa" className="logo-imagen" />
         </div>
-        <h3>Actualizacion de datos</h3>
+
+        <h3>{titulo}</h3>
+
+        {modo === 'activar' && (
+          <p className="modo-info">
+            Tu cuenta ya existe. Crea una contraseña para activarla.
+          </p>
+        )}
+        {modo === 'completar' && (
+          <p className="modo-info">
+            Completa tus datos. También puedes crear una contraseña para
+            entrar con tu DNI (opcional).
+          </p>
+        )}
 
         <form onSubmit={handleRegistroSubmit} className="registro-form">
-          {/* Tipo de Documento y Nro de Documento */}
-        
+          {/* Tipo y Número de Documento */}
+          <div className="form-row">
+            <div>
+              <label htmlFor="tipoDocumento">Tipo de Documento</label>
+              <select
+                id="tipoDocumento"
+                value={tipoDocumento}
+                onChange={(e) => setTipoDocumento(e.target.value)}
+                disabled={modo === 'activar'}
+              >
+                <option value="DNI">DNI</option>
+                <option value="RUC">RUC</option>
+                <option value="CE">Carné de Extranjería</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="numDocumento">Nro de Documento</label>
+              <input
+                type="text"
+                id="numDocumento"
+                value={numDocumento}
+                onChange={(e) => setNumDocumento(e.target.value)}
+                required
+                disabled={modo === 'activar'}
+              />
+            </div>
+          </div>
 
-          {/* Nombres, Apellido Paterno, Apellido Materno */}
+          {/* Nombres y Apellido Paterno */}
           <div className="form-row">
             <div>
               <label htmlFor="nombres">Nombres</label>
-              <input 
-                type="text" 
-                id="nombres" 
-                value={nombres} 
-                onChange={(e) => setNombres(e.target.value)} 
+              <input
+                type="text"
+                id="nombres"
+                value={nombres}
+                onChange={(e) => setNombres(e.target.value)}
                 required
+                disabled={modo === 'activar'}
               />
             </div>
             <div>
               <label htmlFor="apellidoPaterno">Apellido Paterno</label>
-              <input 
-                type="text" 
-                id="apellidoPaterno" 
-                value={apellidoPaterno} 
-                onChange={(e) => setApellidoPaterno(e.target.value)} 
-                required
+              <input
+                type="text"
+                id="apellidoPaterno"
+                value={apellidoPaterno}
+                onChange={(e) => setApellidoPaterno(e.target.value)}
+                disabled={modo === 'activar'}
               />
             </div>
           </div>
 
-          {/* Apellido Materno y Nro de Celular */}
+          {/* Apellido Materno y Celular */}
           <div className="form-row">
             <div>
               <label htmlFor="apellidoMaterno">Apellido Materno</label>
-              <input 
-                type="text" 
-                id="apellidoMaterno" 
-                value={apellidoMaterno} 
-                onChange={(e) => setApellidoMaterno(e.target.value)} 
-                required
+              <input
+                type="text"
+                id="apellidoMaterno"
+                value={apellidoMaterno}
+                onChange={(e) => setApellidoMaterno(e.target.value)}
+                disabled={modo === 'activar'}
               />
             </div>
             <div>
               <label htmlFor="telefono">Nro Celular</label>
-              <input 
-                type="text" 
-                id="telefono" 
-                value={telefono} 
-                onChange={(e) => setTelefono(e.target.value)} 
+              <input
+                type="text"
+                id="telefono"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
                 required
               />
             </div>
           </div>
 
-          {/* Email y Contraseña */}
+          {/* Email */}
           <div className="form-row">
             <div>
               <label htmlFor="correo">Email</label>
-              <input 
-                type="email" 
-                id="correo" 
-                value={correo} 
-                onChange={(e) => setCorreo(e.target.value)} 
+              <input
+                type="email"
+                id="correo"
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
                 required
               />
             </div>
           </div>
 
-          {/* Contraseña y Repetir Contraseña */}
+          {/* Dirección */}
           <div className="form-row">
             <div>
-              <label htmlFor="contrasena">Contraseña</label>
-              <input 
-                type="password" 
-                id="contrasena" 
-                value={contrasena}  
-                onChange={(e) => setContrasena(e.target.value)} 
-                required
+              <label htmlFor="direccion">Dirección</label>
+              <input
+                type="text"
+                id="direccion"
+                value={direccion}
+                onChange={(e) => setDireccion(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Fecha Nacimiento */}
+          <div className="form-row">
+            <div>
+              <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                id="fechaNacimiento"
+                value={fechaNacimiento}
+                onChange={(e) => setFechaNacimiento(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Contraseña - Opcional en modo completar */}
+          <div className="form-row">
+            <div>
+              <label htmlFor="contrasena">
+                Contraseña {modo === 'completar' && '(opcional)'}
+              </label>
+              <input
+                type="password"
+                id="contrasena"
+                value={contrasena}
+                onChange={(e) => setContrasena(e.target.value)}
+                required={claveObligatoria}
               />
             </div>
             <div>
-              <label htmlFor="repetirContrasena">Repetir Contraseña</label>
-              <input 
-                type="password" 
-                id="repetirContrasena" 
-                value={repetirContrasena} 
-                onChange={handleRepetirContrasenaChange} 
-                required
+              <label htmlFor="repetirContrasena">
+                Repetir Contraseña {modo === 'completar' && '(opcional)'}
+              </label>
+              <input
+                type="password"
+                id="repetirContrasena"
+                value={repetirContrasena}
+                onChange={handleRepetirContrasenaChange}
+                required={claveObligatoria}
               />
-              {/* Mostrar mensaje de error si las contraseñas no coinciden */}
               {!passwordsMatch && <label className="error-message">Las contraseñas no coinciden.</label>}
             </div>
           </div>
 
-          {/* Aceptación de términos y autorización de datos */}
+          {mensajeError && typeof mensajeError === 'string' && (
+            <p className="error-message">{mensajeError}</p>
+          )}
+
+          {/* Checkboxes */}
           <div className="form-row">
             <div>
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={aceptoTerminos} 
-                  onChange={(e) => setAceptoTerminos(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={aceptoTerminos}
+                  onChange={(e) => setAceptoTerminos(e.target.checked)}
                 />
                 Acepto los términos y condiciones y la política de privacidad.
               </label>
             </div>
             <div>
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={autorizacionDatos} 
-                  onChange={(e) => setAutorizacionDatos(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={autorizacionDatos}
+                  onChange={(e) => setAutorizacionDatos(e.target.checked)}
                 />
-                Autorizo el uso de mis datos personales para recibir información relacionada a la oferta de servicios médicos de Clínica Vinali.
+                Autorizo el uso de mis datos personales.
               </label>
             </div>
           </div>
 
           <div className="form-actions">
             <button type="button" onClick={handleAtrasClick} className="boton-atras">Atrás</button>
-            <button type="submit" disabled={loading}>  {/* Deshabilitar el botón mientras carga */}
-              {loading ? <Spin size="small" /> : 'Registrarme'}
+            <button type="submit" disabled={loading}>
+              {loading ? <Spin size="small" /> : (
+                modo === 'activar' ? 'Activar cuenta' :
+                modo === 'completar' ? 'Guardar datos' :
+                'Registrarme'
+              )}
             </button>
           </div>
         </form>

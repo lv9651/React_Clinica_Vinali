@@ -1,0 +1,242 @@
+/* ============================================================ */
+/* LAYOUT GENERAL                                                */
+/* ============================================================ */
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+}
+
+/* ============================================================ */
+/* HEADER HORIZONTAL                                             */
+/* ============================================================ */
+.main-header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 15px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+/* Logo */
+.header-logo-link {
+  flex-shrink: 0;
+}
+
+.header-logo {
+  height: 45px;
+  width: auto;
+}
+
+/* Navegación */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-item {
+  color: #1a3a5c;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  color: #34b8c5;
+  border-bottom-color: #34b8c5;
+}
+
+/* Acciones derecha */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #1a3a5c;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f0f9fb;
+  color: #34b8c5;
+}
+
+.action-btn.icon-only {
+  font-size: 18px;
+  padding: 8px;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1a3a5c;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 15px;
+  background: #f0f9fb;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-menu:hover {
+  background: #e0f2f5;
+}
+
+.user-icon {
+  color: #34b8c5;
+}
+
+/* Botón hamburguesa (oculto en desktop) */
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #1a3a5c;
+  cursor: pointer;
+}
+
+/* ============================================================ */
+/* CONTENIDO                                                     */
+/* ============================================================ */
+.main-content {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+/* ============================================================ */
+/* FOOTER                                                        */
+/* ============================================================ */
+.main-footer {
+  background: #1a3a5c;
+  color: white;
+  padding: 25px 30px;
+}
+
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  font-size: 14px;
+}
+
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================ */
+/* RESPONSIVE                                                    */
+/* ============================================================ */
+@media (max-width: 968px) {
+  .header-inner {
+    padding: 12px 20px;
+    flex-wrap: wrap;
+  }
+
+  .menu-toggle {
+    display: block;
+    order: 3;
+  }
+
+  .header-nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    order: 4;
+    padding: 15px 0;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .header-nav.open {
+    display: flex;
+  }
+
+  .nav-item {
+    width: 100%;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .header-actions {
+    gap: 10px;
+    order: 2;
+    margin-left: auto;
+  }
+
+  .action-btn span {
+    display: none;
+  }
+
+  .user-menu .user-name {
+    display: none;
+  }
+
+  .main-content {
+    padding: 20px 15px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-logo {
+    height: 35px;
+  }
+
+  .action-btn {
+    padding: 6px;
+  }
+
+  .user-menu {
+    padding: 6px 10px;
+  }
+}

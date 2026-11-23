@@ -1,238 +1,242 @@
-import React, { useState, useContext } from 'react';
-import { Layout, Menu, Dropdown, Space, Avatar, Drawer } from 'antd';
-import { SiGooglehome, SiOdnoklassniki, SiAudacity, SiDask, SiDatabricks } from "react-icons/si";
+import React, { useContext, useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { UsuarioContext } from '../context/AuthContext';
+import {
+  FaShoppingCart,
+  FaUser,
+  FaBars,
+  FaTimes,
+  FaWhatsapp,
+  FaEnvelope,
+} from 'react-icons/fa';
 import logo from '../assets/Vinali.png';
-import { Link, useNavigate } from 'react-router-dom';
-import { DownOutlined, MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined } from '@ant-design/icons';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../CSS/Menu.css';
-import { FaWhatsapp, FaEnvelope } from 'react-icons/fa';
-import { ImAidKit } from "react-icons/im";
-
-const { Header, Content, Footer, Sider } = Layout;
-const { SubMenu } = Menu;
 
 const MainLayout = ({ children }) => {
   const navigate = useNavigate();
-  const { user, logout, usuario } = useContext(UsuarioContext);
-  const [collapsed, setCollapsed] = useState(false);
-  const [openKeys, setOpenKeys] = useState([]); // Estado que maneja qué submenú está abierto
-  const [drawerVisible, setDrawerVisible] = useState(false); // Estado para controlar el Drawer en dispositivos móviles
+  const location = useLocation();
+  const { usuario, logout } = useContext(UsuarioContext);
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
-  const toggleCollapse = () => setCollapsed(!collapsed);
+  // ============================================================
+  // 🛒 CANTIDAD DE ITEMS EN EL CARRITO
+  // ============================================================
+  const [cantidadCarrito, setCantidadCarrito] = useState(0);
+
+  const calcularTotalCarrito = () => {
+    if (!usuario?.usuarioID) return 0;
+
+    const keysCitas = Object.keys(localStorage).filter((k) =>
+      k.startsWith('serviciosPendientes_')
+    );
+    let totalCitas = 0;
+    keysCitas.forEach((k) => {
+      try {
+        const items = JSON.parse(localStorage.getItem(k) || '[]');
+        totalCitas += items.length;
+      } catch (e) {}
+    });
+
+    const productos = JSON.parse(
+      localStorage.getItem(`carritoProductos_${usuario.usuarioID}`) || '[]'
+    );
+    const totalProductos = productos.reduce(
+      (acc, p) => acc + (p.cantidad || 1),
+      0
+    );
+
+    return totalCitas + totalProductos;
+  };
+
+  useEffect(() => {
+    setCantidadCarrito(calcularTotalCarrito());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usuario, location]);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setCantidadCarrito(calcularTotalCarrito());
+    };
+
+    window.addEventListener('carritoActualizado', handleUpdate);
+    return () =>
+      window.removeEventListener('carritoActualizado', handleUpdate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usuario]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  // Cambia el comportamiento de los submenús para que solo se abra un submenú a la vez
-  const handleOpenChange = (keys) => {
-    setOpenKeys(keys.length ? [keys[keys.length - 1]] : []);
-  };
+  const toggleMenu = () => setMenuAbierto(!menuAbierto);
 
-  // Cambia el comportamiento de los submenús en pantallas pequeñas (móviles)
-  const toggleDrawer = () => {
-    setDrawerVisible(!drawerVisible);
-  };
+  const handleCarritoClick = () => {
+    if (!usuario?.usuarioID) {
+      navigate('/Bienvenida');
+      return;
+    }
 
-  const closeDrawer = () => {
-    setDrawerVisible(false);
-  };
+    const keysCitas = Object.keys(localStorage).filter((k) =>
+      k.startsWith('serviciosPendientes_')
+    );
+    let citas = [];
+    for (const k of keysCitas) {
+      try {
+        const items = JSON.parse(localStorage.getItem(k) || '[]');
+        if (items.length > 0) {
+          citas = items;
+          break;
+        }
+      } catch (e) {}
+    }
 
-  const userMenu = (
-    <Menu
-      style={{
-        boxShadow: '0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
-        borderRadius: '4px',
-        width: '100%',
-      }}
-    >
-      <Menu.Item
-        key="4"
-        icon={<DownOutlined />}
-        onClick={handleLogout}
-        className="menu-item"
-      >
-        <span>Cerrar Sesión</span>
-      </Menu.Item>
-    </Menu>
-  );
+    const productos = JSON.parse(
+      localStorage.getItem(`carritoProductos_${usuario.usuarioID}`) || '[]'
+    );
+
+    if (citas.length === 0 && productos.length === 0) {
+      alert('Tu carrito está vacío.');
+      return;
+    }
+
+    if (citas.length > 0) {
+      const ultimaCita = citas[citas.length - 1];
+      navigate('/eleccion', {
+        state: {
+          especialidad: ultimaCita.especialidad,
+          medico: ultimaCita.medico,
+          sucursal: ultimaCita.sucursal,
+          idesucursal: ultimaCita.idesucursal,
+          idtipoespecialidad: ultimaCita.idtipoespecialidad,
+          idprocedenciaregistro: ultimaCita.idprocedenciaregistro,
+          dia: ultimaCita.dia,
+          hora: ultimaCita.hora,
+          idhorariomedicodividido: ultimaCita.idhorariomedicodividido,
+          idpaciente: ultimaCita.idpaciente,
+          Horariomedic: ultimaCita.Horariomedic,
+          TipoModalidad: ultimaCita.TipoModalidad,
+        },
+      });
+    } else {
+      navigate('/eleccion');
+    }
+  };
 
   return (
-    <Layout style={{ minHeight: '100vh', backgroundColor: '#15afc6' }}>
-      <Sider collapsible collapsed={collapsed} trigger={null} style={{ backgroundColor: '#15afc6' }} width={200}>
-        {/* Icono de menú en dispositivos móviles */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '10px',
-            position: 'absolute',
-            top: 10,
-            left: collapsed ? 'calc(100% - 12px)' : 'calc(110% - 50px)',
-            zIndex: 2,
-            transition: 'left 0.3s ease',
-          }}
-        >
-          <div onClick={toggleCollapse} style={{ cursor: 'pointer', fontSize: '24px', color: '#fff' }}>
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+    <div className="main-layout">
+      {/* HEADER */}
+      <header className="main-header">
+        <div className="header-inner">
+          <Link to="/Bienvenida" className="header-logo-link">
+            <img src={logo} alt="Vinali" className="header-logo" />
+          </Link>
+
+          <button className="menu-toggle" onClick={toggleMenu}>
+            {menuAbierto ? <FaTimes /> : <FaBars />}
+          </button>
+
+          <nav className={`header-nav ${menuAbierto ? 'open' : ''}`}>
+            <Link to="/Bienvenida" className="nav-item" onClick={toggleMenu}>
+              Inicio
+            </Link>
+            <Link
+              to="/S_per_familiar?tipo=1"
+              className="nav-item"
+              onClick={toggleMenu}
+            >
+              Reserva tu cita
+            </Link>
+            <Link to="/tratamientos" className="nav-item" onClick={toggleMenu}>
+              Tratamiento
+            </Link>
+            <Link to="/club" className="nav-item" onClick={toggleMenu}>
+              Club Vinali
+            </Link>
+            <Link to="/mis-citas" className="nav-item" onClick={toggleMenu}>
+              Mis citas
+            </Link>
+            <Link to="/mi-cuenta" className="nav-item" onClick={toggleMenu}>
+              Mi cuenta
+            </Link>
+          </nav>
+
+          <div className="header-actions">
+            {/* 🛒 CARRITO CON BADGE */}
+            <button
+              className="action-btn icon-only"
+              onClick={handleCarritoClick}
+              style={{ position: 'relative' }}
+              title={
+                cantidadCarrito > 0
+                  ? `Tienes ${cantidadCarrito} item${
+                      cantidadCarrito > 1 ? 's' : ''
+                    } en el carrito`
+                  : 'Carrito vacío'
+              }
+            >
+              <FaShoppingCart />
+
+              {cantidadCarrito > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-6px',
+                    right: '-6px',
+                    background: '#dc2626',
+                    color: 'white',
+                    borderRadius: '50%',
+                    minWidth: '20px',
+                    height: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    border: '2px solid white',
+                    padding: '0 4px',
+                  }}
+                >
+                  {cantidadCarrito}
+                </span>
+              )}
+            </button>
+
+            <div
+              className="user-menu"
+              onClick={handleLogout}
+              title="Cerrar sesión"
+            >
+              <FaUser className="user-icon" />
+              <span className="user-name">
+                {usuario
+                  ? `${usuario.nombres} ${usuario.apellidoPaterno || ''}`
+                  : 'Invitado'}
+              </span>
+            </div>
           </div>
         </div>
+      </header>
 
-        <Link to="/Bienvenida">
-          <div
-            className="logo"
-            style={{
-              height: 40,
-              margin: 20,
-              transition: 'all 0.3s ease',
-              width: collapsed ? '40px' : '100%',
-              overflow: 'hidden',
-            }}
-          >
-            <img
-              src={logo}
-              alt="Logo"
-              style={{
-                height: '100%',
-                width: 'auto',
-                transition: 'all 0.3s ease',
-                display: collapsed ? 'none' : 'block',
-              }}
-            />
+      <main className="main-content">{children}</main>
+
+      <footer className="main-footer">
+        <div className="footer-inner">
+          <div className="footer-item">
+            <FaWhatsapp size={18} />
+            <span>
+              WhatsApp: <strong>993 805 070</strong>
+            </span>
           </div>
-        </Link>
-
-        {/* Menú en dispositivos de escritorio */}
-        <Menu theme="dark" mode="inline" style={{ backgroundColor: '#15afc6', color: '#fff' }} openKeys={openKeys} onOpenChange={handleOpenChange}>
-          <Menu.Item key="1" icon={<SiGooglehome />} style={{ fontWeight: 'bold', fontSize: '12px', color: '#fff' }}>
-            <Link to="/Bienvenida">Inicio</Link>
-          </Menu.Item>
-
-          <SubMenu key="docs" icon={<SiOdnoklassniki />} title={<span style={{ fontWeight: 'bold', fontSize: '12px', color: '#fff' }}>Reservar</span>}>
-
-          <Menu.Item 
-    key="3" 
-    icon={<ImAidKit />} 
-    style={{ fontWeight: 'bold', fontSize: '12px', color: '#15afc6', backgroundColor: '#ffffff' }} // Fondo blanco para 'Presencial'
-  >
-    <Link to="/S_per_familiar?tipo=1">Presencial</Link>
-  </Menu.Item>
-  <Menu.Item 
-    key="4" 
-    icon={<SiAudacity />} 
-    style={{ fontWeight: 'bold', fontSize: '12px', color: '#15afc6', backgroundColor: '#ffffff' }} // Fondo blanco para 'Teleconsulta'
-  >
-    <Link to="/S_per_familiar?tipo=2">Teleconsulta</Link>
-  </Menu.Item>
-
-          </SubMenu>
-
-          
-            <Menu.Item key="5" icon={<SiDatabricks />} style={{ fontWeight: 'bold', fontSize: '12px', color: '#fff' }}>
-              <Link to="/Cita_cliente">Mis Citas</Link>
-            </Menu.Item>
-      
-        </Menu>
-
-        {/* Menú para dispositivos móviles (Drawer) */}
-        <Drawer
-          title="Menú"
-          placement="left"
-          closable={false}
-          onClose={closeDrawer}
-          visible={drawerVisible}
-          width={250}
-        >
-          <Menu theme="light" mode="inline">
-            <Menu.Item key="1" icon={<SiGooglehome />} style={{ fontWeight: 'bold', fontSize: '12px', color: '#000' }}>
-              <Link to="/Bienvenida">Inicio</Link>
-            </Menu.Item>
-
-            <SubMenu key="docs" icon={<SiOdnoklassniki />} title={<span style={{ fontWeight: 'bold', fontSize: '12px', color: '#000' }}>Reservar</span>}>
-              <Menu.Item key="3" icon={<ImAidKit />} style={{ fontWeight: 'bold', fontSize: '12px', color: '#000' }}>
-                <Link to="/S_per_familiar?tipo=1">Presencial</Link>
-              </Menu.Item>
-              <Menu.Item key="4" icon={<SiAudacity />} style={{ fontWeight: 'bold', fontSize: '12px', color: '#000' }}>
-                <Link to="/S_per_familiar?tipo=2">Teleconsulta</Link>
-              </Menu.Item>
-            </SubMenu>
-
-              <Menu.Item key="5" icon={<SiDatabricks />} style={{ fontWeight: 'bold', fontSize: '12px', color: '#000' }}>
-                <Link to="/Cita_cliente">Mis Citas</Link>
-              </Menu.Item>
-        
-          </Menu>
-        </Drawer>
-      </Sider>
-
-      <Layout className="site-layout">
-        <Header className="site-layout-background" style={{ padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#15afc6', color: '#fff' }}>
-          <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-            {/* Aquí aseguramos que el logo siempre se alinee a la izquierda */}
+          <div className="footer-item">
+            <FaEnvelope size={18} />
+            <span>
+              Correo: <strong>contacto@vinali.pe</strong>
+            </span>
           </div>
-
-          {/* Avatar y nombre alineados a la derecha */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-            <Dropdown overlay={userMenu}>
-              <Space className="dropdown-space">
-                {/* Avatar siempre visible */}
-                <Avatar size="large" icon={<UserOutlined />} />
-                {/* Mostrar solo el nombre si el sidebar está expandido */}
-                {!collapsed && (
-                  <span className="user-name" style={{ marginLeft: '10px' }}>
-                    {usuario ? `${usuario.nombres} ${usuario.apellidoPaterno} ${usuario.apellidoMaterno || ''}` : 'Nombre no disponible'}
-                  </span>
-                )}
-                <DownOutlined style={{ color: '#fff' }} />
-              </Space>
-            </Dropdown>
-          </div>
-        </Header>
-
-        <Content style={{ padding: '0 24px' }}>
-          <div style={{ margin: '24px 0' }}>
-            {children}
-          </div>
-        </Content>
-
-        <Footer
-          style={{
-            textAlign: 'center',
-            backgroundColor: '#15afc6',
-            color: '#fff',
-            padding: '10px 0',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginBottom: '10px',
-              gap: '20px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <FaWhatsapp size={20} style={{ marginRight: '8px' }} />
-              <span>
-                Número WhatsApp: <strong>993 805 070</strong>
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <FaEnvelope size={20} style={{ marginRight: '8px' }} />
-              <span>
-                Correo: <strong>contacto@vinali.pe</strong>
-              </span>
-            </div>
-          </div>
-        </Footer>
-      </Layout>
-    </Layout>
+        </div>
+      </footer>
+    </div>
   );
 };
 

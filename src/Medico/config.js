@@ -1,5 +1,6 @@
-export const BASE_URL = 'https://apiqfclinica.qf.com.pe';
+export const BASE_URL = 'https://apiclinica.qf.com.pe';
 
 /*https://localhost:7146*/
-/*https://apiqfclinica.qf.com.pe*/
+/*https://apiclinica.qf.com.pe*/
+/*http://apiclinicademo.vinali.pe*/
 

@@ -13,7 +13,16 @@ import Perfamiliar from './Medico/S_per_familiar';
 import Eleccion from './Medico/Eleccion';
 import Bienvenida from './components/Bienvenida';
 import Hist_Clinico from './Res_cita/Historial_clinico';
+import ResetearClave from './Res_cita/ResetearClave';  // ✅ NUEVO
 import DashboardMedico from './Res_cita/DashboardMedico'; 
+import Dashboard from './Res_cita/Dashboard';
+import Confirmacion from './Medico/Confirmacion';
+
+import ListaContenido  from './Res_cita/ListaContenido';       // ✅ NUEVO
+import FormContenido  from './Res_cita/FormContenido';   
+
+import MisCitas  from './Res_cita/MisCitas';   
+
 import { UsuarioProvider } from './context/AuthContext'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -33,6 +42,7 @@ const App = () => {
 
           {/* Rutas con diferentes componentes */}
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
+           <Route path="/resetear-clave" element={<ResetearClave />} />  {/* ✅ NUEVO */}
           <Route path="/registrarse" element={<Registro />} /> 
           <Route path="/Registro_Act_datos" element={<Reg_Act_datos/>} /> 
           <Route path="/menu" element={<MenuG />} />
@@ -44,6 +54,15 @@ const App = () => {
           <Route path="/Registro_depend" element={<MenuG><Registrodepen /></MenuG>} />
           <Route path="/Historial_clinico" element={<MenuG><Hist_Clinico /></MenuG>} />
                  <Route path="/dashboardmedico" element={<DashboardMedico />} />
+                   <Route path="/Res_cita/dashboard" element={<Dashboard />} />
+  <Route path="/confirmacion" element={<MenuG><Confirmacion /></MenuG>} />
+            <Route path="/mis-citas" element={<MenuG><MisCitas /></MenuG>} /> 
+
+
+   {/* ✅ Banners */}
+          <Route path="/Res_cita/contenido" element={<ListaContenido  />} />
+          <Route path="/Res_cita/contenido/crear" element={<FormContenido  />} />
+          <Route path="/Res_cita/contenido/editar/:id" element={<FormContenido  />} />
         </Routes>
       </UsuarioProvider>
     </div>
