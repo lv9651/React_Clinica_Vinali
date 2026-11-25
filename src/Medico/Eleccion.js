@@ -76,7 +76,6 @@ const Eleccion = () => {
   useEffect(() => {
     const idActivo = getIdActivo();
 
-    // Citas
     if (idActivo) {
       const keyCitas = `serviciosPendientes_${idActivo}`;
       const citas = JSON.parse(localStorage.getItem(keyCitas) || '[]');
@@ -85,7 +84,6 @@ const Eleccion = () => {
       setServiciosPendientes([]);
     }
 
-    // Productos
     if (usuario?.usuarioID) {
       const keyProductos = `carritoProductos_${usuario.usuarioID}`;
       const productos = JSON.parse(localStorage.getItem(keyProductos) || '[]');
@@ -102,9 +100,9 @@ const Eleccion = () => {
     const loadIzipayScript = () => {
       if (window.Izipay) return;
 
+    /*https://sandbox-checkout.izipay.pe/payments/v1/js/index.js*/
       const script = document.createElement('script');
-      script.src = 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js';
-      // Para sandbox usa: 'https://sandbox-checkout.izipay.pe/payments/v1/js/index.js'
+      script.src = 'https://checkout.izipay.pe/payments/v1/js/index.js';
       script.async = true;
       script.onload = () => {};
       script.onerror = () => {
@@ -116,6 +114,20 @@ const Eleccion = () => {
 
     loadIzipayScript();
   }, []);
+
+  // ============================================================
+  // 🔒 BLOQUEAR SCROLL MIENTRAS SE PROCESA EL PAGO
+  // ============================================================
+  useEffect(() => {
+    if (procesando) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [procesando]);
 
   // ============================================================
   // PASOS
@@ -236,7 +248,7 @@ const Eleccion = () => {
   };
 
   // ============================================================
-  // 🎯 AUTO-GUARDAR CITA ACTUAL (sin lista negra)
+  // 🎯 AUTO-GUARDAR CITA ACTUAL
   // ============================================================
   useEffect(() => {
     if (cargando) return;
@@ -299,6 +311,7 @@ const Eleccion = () => {
   // ➕ AGREGAR SERVICIO
   // ============================================================
   const agregarServicio = () => {
+    if (procesando) return;
     const idActivo = getIdActivo();
     navigate('/S_per_familiar?tipo=1', {
       state: {
@@ -312,6 +325,7 @@ const Eleccion = () => {
   // 🗑️ ELIMINAR CITA AGREGADA
   // ============================================================
   const eliminarServicio = (codigoUnico) => {
+    if (procesando) return;
     if (!window.confirm('¿Seguro que deseas eliminar esta cita?')) return;
 
     const idActivo = getIdActivo();
@@ -335,6 +349,7 @@ const Eleccion = () => {
   // 🗑️ ELIMINAR CITA ACTUAL
   // ============================================================
   const eliminarCitaActual = () => {
+    if (procesando) return;
     if (
       !window.confirm(
         '¿Seguro que deseas eliminar esta cita? Volverás a elegir especialista.'
@@ -369,6 +384,7 @@ const Eleccion = () => {
   // 🛍️ EDITAR PRODUCTOS
   // ============================================================
   const aumentarCantidad = (idProducto) => {
+    if (procesando) return;
     if (!usuario?.usuarioID) return;
     const key = `carritoProductos_${usuario.usuarioID}`;
 
@@ -382,6 +398,7 @@ const Eleccion = () => {
   };
 
   const disminuirCantidad = (idProducto) => {
+    if (procesando) return;
     if (!usuario?.usuarioID) return;
     const key = `carritoProductos_${usuario.usuarioID}`;
 
@@ -397,6 +414,7 @@ const Eleccion = () => {
   };
 
   const eliminarProducto = (idProducto) => {
+    if (procesando) return;
     if (!window.confirm('¿Eliminar este producto?')) return;
     if (!usuario?.usuarioID) return;
 
@@ -425,8 +443,11 @@ const Eleccion = () => {
 
     setProcesando(true);
 
-    const transactionId = generateTransactionId();
+    const transactionId = Date.now().toString();
     setTrans(transactionId);
+
+    // 🧊 Congelamos el monto para que no cambie a mitad del proceso
+    const montoFinal = calcularTotal().toFixed(2);
 
     const telefonoUsuario =
       usuario.telefono && usuario.telefono.trim() !== ''
@@ -435,12 +456,20 @@ const Eleccion = () => {
         ? usuario.celular
         : '999999999';
 
-    const orderNumber = `${selectedData.Horariomedic}${selectedData.idhorariomedicodividido}${usuario.usuarioID}10`;
+    // ✅ orderNumber = transactionId (12 dígitos)
+    // const orderNumber = `${selectedData.Horariomedic}${selectedData.idhorariomedicodividido}${usuario.usuarioID}`;
+    const orderNumber = transactionId;
+
+
+
+
+
+
 
     const paymentData = {
       transactionId: transactionId,
       paymentType: 'CONTADO',
-      amount: calcularTotal().toFixed(2),
+      amount: montoFinal,
       orderNumber: orderNumber,
       creditAvailable: 0,
       firstName: usuario.nombres,
@@ -462,7 +491,7 @@ const Eleccion = () => {
 
       const data = await response.json();
 
-      if (data.code === '00' && data.message === 'OK') {
+      if (data.code === '00' && data.response.token !== '') {
         const token = data.response.token;
 
         if (window.Izipay) {
@@ -470,25 +499,28 @@ const Eleccion = () => {
             config: {
               transactionId: transactionId,
               action: 'pay',
-              merchantCode: '4004353',
+              merchantCode: '4081990',
+
+              /*4004353*/
               order: {
                 orderNumber: orderNumber,
                 currency: 'PEN',
-                amount: calcularTotal().toFixed(2),
+                amount: montoFinal,
                 processType: 'AT',
-                merchantBuyerId: '4004353',
-                dateTimeTransaction: '1670258741603000',
+                payMethod: "CARD,QR,YAPE_CODE,PAGO_PUSH",
+                merchantBuyerId: usuario.numeroDocumento,
+                dateTimeTransaction: (Date.now() * 1000).toString(),
               },
               billing: {
                 firstName: usuario.nombres,
                 lastName: usuario.apellidoPaterno,
                 email: usuario.correo,
                 phoneNumber: telefonoUsuario,
-                street: 'los olivos',
-                city: 'Lima',
-                state: 'Lima',
-                country: 'PE',
-                postalCode: '15038',
+                street: '1295 Charleston Road',
+                city: 'Mountain View',
+                state: 'LIMA',
+                country: 'US',
+                postalCode: '94043',
                 documentType: 'DNI',
                 document: usuario.numeroDocumento,
               },
@@ -499,12 +531,12 @@ const Eleccion = () => {
             authorization: token,
             keyRSA: 'YOUR_RSA_KEY', // Aquí va tu clave pública RSA
             callbackResponse: async (response) => {
-              if (response.code === '00') {
+              if (response.code === '00'&& response.response.order[0].codeAuth!=='') {
                 try {
                   const carritoFinal = [...serviciosPendientes];
 
-                  await GuardarPago(carritoFinal);
-                  await EnviarReservaCompleta(carritoFinal);
+                  await GuardarPago(carritoFinal, montoFinal);
+                  await EnviarReservaCompleta(carritoFinal, montoFinal);
 
                   // Limpiar citas
                   const idActivo = getIdActivo();
@@ -527,7 +559,7 @@ const Eleccion = () => {
                   setTimeout(() => {
                     navigate('/confirmacion', {
                       state: {
-                        totalPagado: calcularTotal().toFixed(2),
+                        totalPagado: montoFinal,
                         metodoPago: metodoPagoFinal,
                         telefono: telefonoUsuario,
                         servicios: carritoFinal,
@@ -582,7 +614,7 @@ const Eleccion = () => {
   // ============================================================
   // 📧 ENVIAR RESERVA COMPLETA
   // ============================================================
-  const EnviarReservaCompleta = async (carritoFinal) => {
+  const EnviarReservaCompleta = async (carritoFinal, montoFinal) => {
     const codigoReserva = `VIN-${new Date().getFullYear()}-${String(
       new Date().getMonth() + 1
     ).padStart(2, '0')}${String(new Date().getDate()).padStart(
@@ -599,7 +631,6 @@ const Eleccion = () => {
       return cod;
     };
 
-    // Citas
     const citas = carritoFinal.map((s) => ({
       codigo: s.codigoUnico,
       especialidad: s.especialidad || s.descripcion || '',
@@ -612,7 +643,6 @@ const Eleccion = () => {
       precio: parseFloat(s.precio || 0),
     }));
 
-    // Productos
     const productos = productosCarrito.map((p) => ({
       codigo: generarCodigoProducto(),
       descripcion: p.descripcion,
@@ -637,7 +667,7 @@ const Eleccion = () => {
       Telefono: telefonoUsuarioFinal(),
       CodigoReserva: codigoReserva,
       MetodoPago: 'Tarjeta (Izipay)',
-      TotalPagado: parseFloat(calcularTotal().toFixed(2)),
+      TotalPagado: parseFloat(montoFinal),
       Citas: citas,
       Productos: productos,
     };
@@ -656,10 +686,9 @@ const Eleccion = () => {
   // ============================================================
   // 💾 GUARDAR PAGO
   // ============================================================
-  const GuardarPago = async (carrito) => {
+  const GuardarPago = async (carrito, montoFinal) => {
     const detalle = [];
 
-    // Citas
     carrito.forEach((s) => {
       detalle.push({
         idprecioproducto: s.idprecioproducto || idprecioprod,
@@ -672,7 +701,6 @@ const Eleccion = () => {
       });
     });
 
-    // Productos
     productosCarrito.forEach((p) => {
       detalle.push({
         idprecioproducto: p.idProducto,
@@ -683,7 +711,7 @@ const Eleccion = () => {
       });
     });
 
-    const totalGeneral = calcularTotal().toFixed(2);
+    const totalGeneral = montoFinal;
 
     const ventaData = {
       IdSucursal: selectedData.idesucursal || usuario.idSucursal || 1,
@@ -785,6 +813,46 @@ const Eleccion = () => {
   const totalItems = todasLasCitas.length + productosCarrito.length;
 
   // ============================================================
+  // 🔄 OVERLAY DE CARGA GLOBAL
+  // ============================================================
+  const LoadingOverlay = () =>
+    procesando ? (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(3px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '20px',
+          color: 'white',
+          fontFamily: "'Poppins', 'Segoe UI', sans-serif",
+        }}
+      >
+        <div
+          style={{
+            width: '64px',
+            height: '64px',
+            border: '5px solid rgba(255,255,255,0.25)',
+            borderTopColor: '#34b8c5',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+          }}
+        />
+        <p style={{ fontSize: '16px', fontWeight: 600, margin: 0 }}>
+          Procesando tu pago...
+        </p>
+        <p style={{ fontSize: '13px', opacity: 0.8, margin: 0 }}>
+          No cierres ni recargues esta ventana
+        </p>
+      </div>
+    ) : null;
+
+  // ============================================================
   // RENDER
   // ============================================================
   return (
@@ -800,6 +868,16 @@ const Eleccion = () => {
         minHeight: 'calc(100vh - 200px)',
       }}
     >
+      {/* 🛡️ Keyframe del spinner */}
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+
+      {/* 🛡️ OVERLAY GLOBAL DE CARGA */}
+      <LoadingOverlay />
+
       {/* SIDEBAR IZQUIERDO */}
       <aside
         style={{
@@ -923,7 +1001,10 @@ const Eleccion = () => {
       {/* CONTENIDO CENTRAL */}
       <div style={{ flex: 1 }}>
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            if (!procesando) navigate(-1);
+          }}
+          disabled={procesando}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -935,7 +1016,8 @@ const Eleccion = () => {
             color: '#1a2b47',
             fontWeight: 600,
             fontSize: '13px',
-            cursor: 'pointer',
+            cursor: procesando ? 'not-allowed' : 'pointer',
+            opacity: procesando ? 0.6 : 1,
             marginBottom: '20px',
           }}
         >
@@ -1040,13 +1122,14 @@ const Eleccion = () => {
                           ? eliminarCitaActual()
                           : eliminarServicio(cita.codigoUnico)
                       }
+                      disabled={procesando}
                       style={{
                         background: 'transparent',
-                        color: '#dc2626',
+                        color: procesando ? '#cbd5e0' : '#dc2626',
                         border: 'none',
                         padding: '4px',
                         borderRadius: '6px',
-                        cursor: 'pointer',
+                        cursor: procesando ? 'not-allowed' : 'pointer',
                         display: 'flex',
                       }}
                     >
@@ -1251,7 +1334,7 @@ const Eleccion = () => {
                       >
                         <button
                           onClick={() => disminuirCantidad(p.idProducto)}
-                          disabled={p.cantidad <= 1}
+                          disabled={p.cantidad <= 1 || procesando}
                           style={{
                             width: '28px',
                             height: '28px',
@@ -1259,9 +1342,14 @@ const Eleccion = () => {
                             border: '1px solid #e2e8f0',
                             background: 'white',
                             cursor:
-                              p.cantidad <= 1 ? 'not-allowed' : 'pointer',
+                              p.cantidad <= 1 || procesando
+                                ? 'not-allowed'
+                                : 'pointer',
                             fontWeight: 700,
-                            color: p.cantidad <= 1 ? '#cbd5e0' : '#1a2b47',
+                            color:
+                              p.cantidad <= 1 || procesando
+                                ? '#cbd5e0'
+                                : '#1a2b47',
                           }}
                         >
                           −
@@ -1278,15 +1366,16 @@ const Eleccion = () => {
                         </span>
                         <button
                           onClick={() => aumentarCantidad(p.idProducto)}
+                          disabled={procesando}
                           style={{
                             width: '28px',
                             height: '28px',
                             borderRadius: '6px',
                             border: '1px solid #e2e8f0',
                             background: 'white',
-                            cursor: 'pointer',
+                            cursor: procesando ? 'not-allowed' : 'pointer',
                             fontWeight: 700,
-                            color: '#1a2b47',
+                            color: procesando ? '#cbd5e0' : '#1a2b47',
                           }}
                         >
                           +
@@ -1304,11 +1393,12 @@ const Eleccion = () => {
                         </span>
                         <button
                           onClick={() => eliminarProducto(p.idProducto)}
+                          disabled={procesando}
                           style={{
                             background: 'transparent',
-                            color: '#dc2626',
+                            color: procesando ? '#cbd5e0' : '#dc2626',
                             border: 'none',
-                            cursor: 'pointer',
+                            cursor: procesando ? 'not-allowed' : 'pointer',
                             padding: '4px',
                           }}
                         >
@@ -1386,6 +1476,7 @@ const Eleccion = () => {
                 <select
                   value={documento}
                   onChange={(e) => setDocumento(e.target.value)}
+                  disabled={procesando}
                   style={{
                     width: '100%',
                     padding: '10px 14px',
@@ -1395,6 +1486,8 @@ const Eleccion = () => {
                     marginBottom: '20px',
                     outline: 'none',
                     fontFamily: "'Poppins', 'Segoe UI', sans-serif",
+                    cursor: procesando ? 'not-allowed' : 'pointer',
+                    opacity: procesando ? 0.6 : 1,
                   }}
                 >
                   <option value="2">Boleta</option>
@@ -1617,15 +1710,18 @@ const Eleccion = () => {
 
                   <button
                     onClick={agregarServicio}
+                    disabled={procesando}
                     style={{
                       background: 'white',
-                      color: '#34b8c5',
-                      border: '2px solid #34b8c5',
+                      color: procesando ? '#cbd5e0' : '#34b8c5',
+                      border: `2px solid ${
+                        procesando ? '#cbd5e0' : '#34b8c5'
+                      }`,
                       padding: '14px 20px',
                       borderRadius: '10px',
                       fontWeight: 700,
                       fontSize: '14px',
-                      cursor: 'pointer',
+                      cursor: procesando ? 'not-allowed' : 'pointer',
                     }}
                   >
                     ➕ Agregar servicio
